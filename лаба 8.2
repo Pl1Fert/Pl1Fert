@@ -1,0 +1,93 @@
+Лаб 8.2
+
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <locale.h>
+
+int ClearStdin()
+{
+    int rv = 1;
+    int ch;
+    while (1)
+    {
+        ch = getchar();
+        if (ch == '\n' || ch == EOF)
+        {
+            break;
+        }
+        rv = 0;
+    }
+    return rv;
+}
+
+
+
+int main()
+{
+    setlocale(LC_ALL,"");
+    
+    int readCount, isEmpty;
+    int n,a = 0,b = 0;
+    
+    //Размерность строки
+    printf("Введите размер строки: ");
+    
+    while (1)
+    {
+        readCount = scanf("%d", &n);
+        isEmpty = ClearStdin();
+        if (readCount == 1 && isEmpty != 0 && n > 0)
+        {
+            break;
+        }
+        printf("Неверный формат числа. Введите целое положительное число\n");
+    }
+    
+    char *str = (char *)calloc(n, sizeof(char));
+    //Заполнение строки
+    /*for(int i = 0;i < n;i++)
+    {
+       scanf("%c",&str[i]);
+    }*/
+    fflush(stdin);
+    gets(str);
+    
+    //Поиск первого двоеточия
+    
+    for(int i = 0;i < n;i++)
+    {
+        if(str[i] == ':')
+        {
+            a = i;
+            break;
+        }
+    }
+    
+    //Поиск последнего двоеточия
+    
+    for(int i = n;i > 0;i--)
+    {
+        if(str[i]==':' || str[i]=='\0')
+        {
+            b = i;
+            break;
+        }
+    }
+    
+    //Вывод символов между двоеточиями
+    
+    printf("Символы между двоеточиями\n ");
+    for(int i = a + 1;i < b;i++)
+    {
+       printf("%c", str[i]);
+    }
+    //Вывод строки
+    printf("\nИсходная строка\n ");
+    printf("\n%s\n", str);
+    
+    free(str);
+    return 0;
+}
