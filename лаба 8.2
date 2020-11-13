@@ -46,13 +46,13 @@ int main()
         printf("Неверный формат числа. Введите целое положительное число\n");
     }
     
-    char *str = (char *)calloc(n, sizeof(char));
+    char *str = (char *)calloc(n+1, sizeof(char));
     //Заполнение строки
     /*for(int i = 0;i < n;i++)
     {
        scanf("%c",&str[i]);
     }*/
-    fflush(stdin);
+    rewind(stdin);
     gets(str);
     
     //Поиск первого двоеточия
