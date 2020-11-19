@@ -31,16 +31,7 @@ int main()
     int m; // количество символов в строке
     int readCount, isEmpty;
       
-       while (1)
-      {
-          readCount = scanf("%d", &n);
-          isEmpty = ClearStdin();
-          if (readCount == 1 && isEmpty != 0 && n > 0)
-          {
-              break;
-          }
-          printf("Неверный формат числа. Введите целое положительное число\n");
-      }
+     
     
     printf("Введите количество строк: ");
     while (1)
@@ -71,7 +62,7 @@ int main()
     
     for(int i = 0; i < n; i++)
     {
-        str[i] = (char *)malloc(m+1*sizeof(char));
+        str[i] = (char *)malloc((m+1)*sizeof(char));
 
     }
     
@@ -87,7 +78,7 @@ int main()
     
     //Ввод строк
     
-    fflush(stdin);
+    rewind(stdin);
     for(int i = 0; i < n; i++)
     {
         gets(str[i]);
