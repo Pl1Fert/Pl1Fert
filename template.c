@@ -10,7 +10,7 @@ int main()
 
     
     int min,n;
-
+//шаблон для матрицы динамической
     printf("Введите размерность матрицы.  ");
     
         scanf("%d", &n);
@@ -51,4 +51,40 @@ int main()
     free(array);
     return 0;
 }    
+
+// шаблон для строки динамической
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <locale.h>
+int main()
+{
+    setlocale(LC_ALL,"");
+    int n;
+    
+    //Размерность строки
+    printf("Введите размер строки: ");
+    
+     scanf("%d", &n);
+        
+    
+    char *str = (char *)calloc(n+1, sizeof(char));
+    //Заполнение строки
+    /*for(int i = 0;i < n;i++)
+    {
+       scanf("%c",&str[i]);
+    }*/
+    rewind(stdin);
+    gets(str);
+    
+   
+    
+   
+    //Вывод строки
+    printf("\nИсходная строка\n ");
+    printf("\n%s\n", str);
+    
+    free(str);
+    return 0;
+}
     
