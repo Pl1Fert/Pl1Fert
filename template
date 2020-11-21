@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <locale.h>
+#include <stdlib.h>
+
+
+
+int main()
+{
+    setlocale(LC_ALL,"");
+
+    
+    int min,n;
+
+    printf("Введите размерность матрицы.  ");
+    
+        scanf("%d", &n);
+       
+
+    int **array= (int**)malloc(n*sizeof(int));
+    for(int i = 0;i < n;i++)
+    {
+        array[i] = (int*)malloc(n*sizeof(int));
+    }
+    //Заполнение матрицы
+    printf("Заполните матрицу \n");
+
+    for(int i = 0;i < n;i++)
+    {
+        for(int j = 0;j < n;j++)
+        {
+             scanf("%d", &array[i][j]);
+                
+        }
+    }
+    //Вывод исходной матрицы
+    printf("Исходная матрица \n");
+
+    for(int i = 0;i < n;i++)
+    {
+        for(int j = 0;j < n;j++)
+        {
+            printf("%3d",array[i][j]);
+        }
+        printf("\n");
+    }
