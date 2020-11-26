@@ -160,14 +160,14 @@ int findmaximum(int** second_array, int n, int i)
 
 int multi(int** second_array, int n, int i)
 {
-    int a;
-    a = 1;
+    int a = 1;
+  
     for (int j = 0; j < n; j++)
     {
         a *= second_array[i][j];
     }
     return a;
-    a = 0;
+    a = 1;
 }
 
 //Вывод матриц
