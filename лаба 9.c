@@ -79,7 +79,7 @@ int main()
     rewind(stdin);
     for(int i = 0; i < n; i++)
     {
-        gets(str[i]);
+        fgets(str[i],(m+1),stdin);
     }
     
     //Вывод строк
