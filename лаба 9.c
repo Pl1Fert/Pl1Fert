@@ -26,13 +26,11 @@ int ClearStdin()
 int main()
 {
     setlocale(LC_ALL,"");
-    int max;
+    int max,value = 0;
     int n; // количество строк
     int m; // количество символов в строке
     int readCount, isEmpty;
       
-     
-    
     printf("Введите количество строк: ");
     while (1)
     {
@@ -92,12 +90,25 @@ int main()
     {
         printf("%s\n",str[i]);
     }
-    
+
     //Перевод строк в числа
+    int j,znak;
     
-    for(int i = 0;i < n;i++)
+    for (int i = 0; i < n; i++)
     {
-        array[i][0] = atoi(str[i]);
+        for (j = 0; str[i][j]!= '\0'; j++)
+        {
+            znak = (str[i][j]=='-')? -1:1;
+            if (str[i][j]=='+' || str[i][j]=='-') j++;
+            if (str[i][j] >= '0' && str[i][j] <= '9')
+            {
+                value = value * 10 + str[i][j] - '0';
+            }
+            value*=znak;
+        }
+        array[i][0] = value;
+        value = 0;
+        j = 0;
     }
     
     //Сортировка по убыванию
@@ -139,4 +150,3 @@ int main()
     free(array);
     return 0;
 }
-
