@@ -2,6 +2,8 @@
 
 
 
+
+
 #include <stdio.h>
 #include <locale.h>
 #include <stdlib.h>
@@ -9,7 +11,7 @@
 int findmaximum(int** second_array, int n, int i);
 void ins(int** first_array, int n, int** second_array);
 void print(int** first_array, int n, int** second_array);
-int multi(int** second_array, int n, int i);
+int multi(int** second_array, int n, int j);
 int ClearStdin(void);
 
 int main()
@@ -21,7 +23,7 @@ int main()
     printf("Введите размерность матриц: ");
     while (1)
     {
-        readCount = scanf_s("%d", &n);
+        readCount = scanf("%d", &n);
         isEmpty = ClearStdin();
         if (readCount == 1 && isEmpty != 0 && n > 0)
         {
@@ -71,7 +73,7 @@ int main()
     {
         for (int i = 0; i < n; i++)
         {
-            first_array[i][j] += multi(second_array, n, i);
+            first_array[i][j] += multi(second_array, n, j);
         }
     }
     print(first_array, n, second_array);
@@ -107,7 +109,7 @@ void ins(int** first_array, int n, int** second_array)
 
             while (1)
             {
-                readCount = scanf_s("%d", &first_array[i][j]);
+                readCount = scanf("%d", &first_array[i][j]);
                 isEmpty = ClearStdin();
                 if (readCount == 1 && isEmpty != 0)
                 {
@@ -128,7 +130,7 @@ void ins(int** first_array, int n, int** second_array)
 
             while (1)
             {
-                readCount = scanf_s("%d", &second_array[i][j]);
+                readCount = scanf("%d", &second_array[i][j]);
                 isEmpty = ClearStdin();
                 if (readCount == 1 && isEmpty != 0)
                 {
@@ -158,16 +160,16 @@ int findmaximum(int** second_array, int n, int i)
 
 //Перемножает элементы строки второй матрицы и вовзращает a
 
-int multi(int** second_array, int n, int i)
+int multi(int** second_array, int n, int j)
 {
     int a = 1;
   
-    for (int j = 0; j < n; j++)
+    for (int jj = 0; jj < n; jj++)
     {
-        a *= second_array[i][j];
+        a *= second_array[j][jj];
     }
     return a;
-    a = 1;
+    
 }
 
 //Вывод матриц
@@ -212,4 +214,3 @@ int ClearStdin(void)
     }
     return rv;
 }
-
