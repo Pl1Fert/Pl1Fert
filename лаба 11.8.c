@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <locale.h>
 
-int factorial(int n)
+double factorial(double n)
 {
     if(n == 0)
         return 1;
@@ -32,14 +32,14 @@ int main()
 {
     setlocale(LC_ALL,"");
     
-    int n;
+    double n;
     int readCount, isEmpty;
     
     printf("Введите число: ");
     
     while (1)
     {
-        readCount = scanf("%d", &n);
+        readCount = scanf("%lf", &n);
         isEmpty = ClearStdin();
         if (readCount == 1 && isEmpty != 0 && n >= 0)
         {
@@ -48,6 +48,6 @@ int main()
         printf("Неверный формат числа. Введите целое положительное число\n");
     }
     
-    printf("Факториал числа %d = %d\n",n,factorial(n));
+    printf("Факториал числа %.1lf = %.1lf\n",n,factorial(n));
     return 0;
 }
