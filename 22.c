@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <locale.h>
 
-enum data{Int,Float } typ;
+enum Types { Int, Float  } typ;
 
-void summa( int groups, int len, data typ, ...)
+void summa(int groups, int len, Types typ, ...)
 {
 	int sumI = 0;
 	float sumF = 0;
@@ -15,27 +15,28 @@ void summa( int groups, int len, data typ, ...)
 	{
 		switch (typ)
 		{
-			case Int:
-				while (len--)
-				{
-					sumI += va_arg(p, int);
-				}
-				break;
-			case Float:
-				while (len--)
-				{
-					sumF += va_arg(p, float);
-				}
-				break;
+		case Int:
+			while (len--)
+			{
+				sumI += va_arg(p, int);
+			}
+			break;
+		case Float:
+			while (len--)
+			{
+				sumF += va_arg(p, double);
+			}
+			break;
 		}
 		len = va_arg(p, int);
-		typ = va_arg(p, enum data);
+		typ = va_arg(p, enum Types);
+		
 	}
 	va_end(p);
 	printf("%d %f", sumI, sumF);
 }
 int main()
 {
-	summa(3, 3, Int, 1, 2, 3, Float, 1.2, 3.8, 1.5, Int, 5, 6, 4);
+	summa(3,2,Int, 2, 2, 3, Float, 1.2, 3.8, 1.5, 4,Int,3, 5, 6, 4);
 	return 0;
 }
