@@ -91,20 +91,7 @@ int main()
 #include <stdlib.h>
 #include <locale.h>
 int ClearStdin()
-{
-    int rv = 1;
-    int ch;
-    while (1)
-    {
-        ch = getchar();
-        if (ch == '\n' || ch == EOF)
-        {
-            break;
-        }
-        rv = 0;
-    }
-    return rv;
-}
+
 //шаблон под массив строк
 int main()
 {
@@ -157,24 +144,30 @@ int main()
         printf("%s\n",str[i]);
     }
 
-    //Перевод строк в числа
-    int j,znak;
+     //Перевод строк в числа
+    int j,znak = 1;
     
     for (int i = 0; i < n; i++)
     {
         for (j = 0; str[i][j]!= '\0'; j++)
         {
-            znak = (str[i][j]=='-')? -1:1;
+            if(str[i][j]=='-')
+            {
+                znak = -1;
+            }
+            //znak = (str[i][j]=='-')? -1:1;
             if (str[i][j]=='+' || str[i][j]=='-') j++;
             if (str[i][j] >= '0' && str[i][j] <= '9')
             {
                 value = value * 10 + str[i][j] - '0';
             }
-            value*=znak;
+         
         }
+        value*=znak;
         array[i][0] = value;
         value = 0;
         j = 0;
+        znak = 1;
     }
     
     //Освобождение памяти
