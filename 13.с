@@ -1,0 +1,57 @@
+int check(char str)
+{
+    if ((str >= 'a' && str <= 'z') || (str >= 'A' && str <= 'Z'))
+            return 1;
+        else
+            return 0;
+    
+}
+void find(char*str,int n)
+{
+    int i = 0,start,end,max = 0,maxstart,maxend;
+    while(i<n)
+    {
+            while(str[i] == ' ')i++;
+            start = i;
+            while(check(str[i]))i++;
+            end = i;
+            if(!max)max = end - start;
+            else if(max<end - start)
+            {
+                max = end - start;
+                maxstart = start;
+                maxend = end;
+            }
+    }
+    //for(int i = maxstart;)
+}
+int main()
+{
+    setlocale(LC_ALL,"");
+    int n;
+      
+    printf("Введите размер строки: ");
+    scanf("%d", &n);
+     
+    //Выделение памяти под массив
+    char *str=(char *)malloc(n*sizeof(char ));
+ 
+    printf("Введите строку длинной не более %d символов\n",n);
+    
+    //Ввод строки
+    
+    rewind(stdin);
+    fgets(str,(n+1),stdin);
+    
+    
+    //Вывод строк
+    
+    printf("строка \n");
+    printf("%s\n",str);
+    
+
+    //Освобождение памяти
+    free(str);
+
+    return 0;
+}
