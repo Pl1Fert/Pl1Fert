@@ -1,55 +1,65 @@
+#include <stdio.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <string.h>
+
 int check(char str)
 {
     if ((str >= 'a' && str <= 'z') || (str >= 'A' && str <= 'Z'))
-            return 1;
-        else
-            return 0;
-    
+        return 1;
+    else
+        return 0;
+
 }
-void find(char*str,int n)
+int find(char* str, int n)
 {
-    int i = 0,start,end,max = 0,maxstart,maxend;
-    while(i<n)
+    int i = 0, start, end, max = 0, maxstart, maxend;
+    while (i < n)
     {
-            while(str[i] == ' ')i++;
-            start = i;
-            while(check(str[i]))i++;
-            end = i;
-            if(!max)max = end - start;
-            else if(max<end - start)
-            {
-                max = end - start;
-                maxstart = start;
-                maxend = end;
-            }
+        while (str[i] == ' ')i++;
+        start = i;
+        while (check(str[i]))i++;
+        end = i;
+        if (!max)max = end - start;
+        else if (max < end - start)
+        {
+            max = end - start;
+            maxstart = start;
+            maxend = end;
+        }
+        i++;
     }
-    //for(int i = maxstart;)
+    return maxstart;
 }
 int main()
 {
-    setlocale(LC_ALL,"");
-    int n;
-      
-    printf("Введите размер строки: ");
-    scanf("%d", &n);
-     
-    //Выделение памяти под массив
-    char *str=(char *)malloc(n*sizeof(char ));
- 
-    printf("Введите строку длинной не более %d символов\n",n);
-    
-    //Ввод строки
-    
-    rewind(stdin);
-    fgets(str,(n+1),stdin);
-    
-    
-    //Вывод строк
-    
-    printf("строка \n");
-    printf("%s\n",str);
-    
+    setlocale(LC_ALL, "");
+    int n,start;
 
+    printf("Введите размер строки: ");
+    scanf_s("%d", &n);
+
+    //Выделение памяти под массив
+    char* str = (char*)malloc(n * sizeof(char));
+
+    printf("Введите строку длинной не более %d символов\n", n);
+
+    //Ввод строки
+
+    rewind(stdin);
+    fgets(str, (n + 1), stdin);
+
+
+    //Вывод строк
+
+    printf("строка \n");
+    printf("%s\n", str);
+
+    start = find(str, n);
+    for (start; str[start] != ' '; start++)
+    {
+        printf("%c", str[start]);
+    }
     //Освобождение памяти
     free(str);
 
