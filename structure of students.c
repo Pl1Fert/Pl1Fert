@@ -51,7 +51,7 @@ struct student
     char name[20];
     char patronymic[20];
     char address[20];
-    int group_number;
+    char group_number[20];
     float rating;
 
 };
@@ -61,6 +61,7 @@ void enter_struct(struct student*,int amount);
 void output_struct(struct student*,int amount);
 void delete_student(struct student*,int amount);
 void edit_student(struct student*,int amount);
+int confirmation(void);
 
 void header_sort(struct student*,int amount);
 void sort_lastname_ascending_order(struct student*,int amount);
@@ -112,7 +113,6 @@ int main()
             case 10:
                 free(pointer);
                 return 0;
-            default:printf("Wrong number");
         }
     }
     
@@ -121,26 +121,25 @@ int main()
 
 int menu(void)
 {
-    int number;
+    int choice;
     printf("Choose a numebr\n");
     printf("1-enter a new struct\n");
     printf("2-output a struct\n");
     printf("3-delete selected student\n");
-    printf("4-");
-    printf("5-");
+    printf("4-sort students");
+    printf("5-edit selected student");
     printf("6-");
     printf("7-");
     printf("8-");
     printf("9-");
     printf("10-");
     
-    scanf("%d",&number);
-    return number;
+    scanf("%d",&choice);
+    return choice;
 }
 
 void enter_struct(struct student *pointer,int amount)
 {
-    
     for(int i = 0;i < amount;i++)
     {
         printf("Enter student's lastname: ");
@@ -161,11 +160,11 @@ void enter_struct(struct student *pointer,int amount)
         
         printf("Enter student's group number: ");
         rewind(stdin);
-        scanf("%d",&pointer[i].group_number);
+        fgets(pointer[i].group_number,20,stdin);
         
         printf("Enter student's rating: ");
         rewind(stdin);
-        scanf("%.2f",&pointer[i].rating);
+        scanf("%f",&pointer[i].rating);
     }
 }
 
@@ -180,29 +179,30 @@ void output_struct(struct student *pointer,int amount)
         printf("Name: %s\n", pointer[i].name);
         printf("Patronymic: %s\n", pointer[i].patronymic);
         printf("Home address: %s\n", pointer[i].address);
-        printf("Group number: %d\n", pointer[i].group_number);
+        printf("Group number: %s\n", pointer[i].group_number);
         printf("Rating: %.2f\n", pointer[i].rating);
         printf("\n");
     }
 }
-//передавать ссылкой
-void delete_student(struct student *pointer, int amount)
+
+void delete_student(struct student *pointer, int amount)//передавать ссылкой
 {
     int number;
     printf("Enter a number of student to delete\n");
     printf("To delete all students enter '999'\n");
     scanf("%d", &number);
-    if(number == 999)
+    if(number == 999 && confirmation() == 1)
     {
         free(pointer);
     }
     
-    if (number != 999 && number == amount)
+    if (number != 999 && number == amount && confirmation() == 1)
     {
         amount--;
         pointer = (struct student*)realloc(pointer,amount * sizeof(struct student));
     }
-    else
+    
+    if (number != 999 && number != amount && confirmation() == 1)
     {
         for (; number < amount; number++)
         {
@@ -215,17 +215,87 @@ void delete_student(struct student *pointer, int amount)
 
 void edit_student(struct student *pointer, int amount)
 {
-    printf("Enter lastname of student: ");
-    printf("Enter name of student: ");
-    printf("Enter patronymic of student: ");
-    printf("Enter student's address: ");
-    printf("Enter student's group number: ");
-    printf("Enter student's rating: ");
+    int number,choice;
+    char *buf_string = (char*)malloc(20*sizeof(char));
+    float buf_float;
+    
+    printf("Choose what student you want to edit\n");
+    scanf("%d",&number);
+    
+    while(1)
+    {
+        printf("1-Lastname\n");
+        printf("2-Name\n");
+        printf("3-Patronymic\n");
+        printf("4-Address\n");
+        printf("5-Groupnumber\n");
+        printf("6-Rating\n");
+        printf("7-Exit\n");
+        scanf("%d",&choice);
+        
+        switch (choice)
+        {
+            case 1:
+                printf("Enter new student's lastname: ");
+                fgets(buf_string, 20, stdin);
+                if(confirmation())
+                    strcpy(pointer[number].lastname,buf_string);
+                rewind(stdin);
+                break;
+            case 2:
+                printf("Enter new student's name: ");
+                fgets(buf_string, 20, stdin);
+                if(confirmation())
+                    strcpy(pointer[number].name,buf_string);
+                rewind(stdin);
+                break;
+            case 3:
+                printf("Enter new student's patronymic: ");
+                fgets(buf_string, 20, stdin);
+                if(confirmation())
+                    strcpy(pointer[number].patronymic,buf_string);
+                rewind(stdin);
+                break;
+            case 4:
+                printf("Enter new student's address: ");
+                fgets(buf_string, 20, stdin);
+                if(confirmation())
+                    strcpy(pointer[number].address,buf_string);
+                rewind(stdin);
+                break;
+            case 5:
+                printf("Enter new student's address: ");
+                fgets(buf_string, 20, stdin);
+                if(confirmation())
+                    strcpy(pointer[number].group_number,buf_string);
+                rewind(stdin);
+                break;
+            case 6:
+                printf("Enter new student's address: ");
+                scanf("%f",&buf_float);
+                if(confirmation())
+                    pointer[number].rating = buf_float;
+                rewind(stdin);
+            case 7:
+                free(buf_string);
+                break;
+        }
+    }
+}
+
+int confirmation()
+{
+    int choice;
+    printf("Are you sure?\n");
+    printf("1-Yes\n");
+    printf("0-No\n");
+    scanf("%d",&choice);
+    return choice;
 }
 
 void header_sort(struct student *pointer, int amount)
 {
-    int number;
+    int choice;
     
     printf("Choose how you want to sort\n");
     printf("1-sort lastnames in ascending order\n");
@@ -248,11 +318,11 @@ void header_sort(struct student *pointer, int amount)
     printf("13-exit\n");
     
     
-    scanf("%d",&number);
+    scanf("%d",&choice);
     
     while(1)
       {
-          switch(number)
+          switch(choice)
           {
             case 1:
                   sort_lastname_ascending_order(pointer,amount);
@@ -292,7 +362,6 @@ void header_sort(struct student *pointer, int amount)
                   break;
             case 13:
                   return;
-            default:printf("Wrong number");
           }
       }
 }
@@ -431,7 +500,7 @@ void sort_groupnumber_ascending_order(struct student* pointer,int amount)
     for(int i = 0; i< amount-1;i++)
         for(int j = 1; j< amount; j++)
         {
-            if(pointer[i].group_number > pointer[j].group_number)
+            if(strcmp(pointer[i].group_number,pointer[j].group_number) > 0)
             {
                 temp = &pointer[i];
                 pointer[i] = pointer[j];
@@ -447,7 +516,7 @@ void sort_groupnumber_descending_order(struct student* pointer,int amount)
     for(int i = 0; i< amount-1;i++)
         for(int j = 1; j< amount; j++)
         {
-            if(pointer[i].group_number < pointer[j].group_number)
+            if(strcmp(pointer[i].group_number,pointer[j].group_number) < 0)
             {
                 temp = &pointer[i];
                 pointer[i] = pointer[j];
