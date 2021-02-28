@@ -60,7 +60,7 @@ struct student
 int menu(void);
 void enter_struct(struct student*,int amount);
 void output_struct(struct student*,int amount);
-void delete_student(struct student*,int amount);
+void delete_student(struct student*,int &amount);
 void edit_student(struct student*,int amount);
 int confirmation(void);
 void find(struct student*,int amount);
@@ -194,7 +194,7 @@ void output_struct(struct student *pointer,int amount)
     }
 }
 
-void delete_student(struct student *pointer, int amount)//передавать ссылкой
+void delete_student(struct student *pointer, int &amount)
 {
     int number;
     if (!pointer)
