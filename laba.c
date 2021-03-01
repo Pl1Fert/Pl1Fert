@@ -1,16 +1,8 @@
 //
 //  main.cpp
-//  test
+//  MainFile
 //
-//  Created by AlexeyRusel on 2/28/21.
-//  Copyright © 2021 PL1Fert. All rights reserved.
-//
-
-//
-//  main.c
-//  mainFIle
-//
-//  Created by AlexeyRusel on 2/21/21.
+//  Created by AlexeyRusel on 3/1/21.
 //  Copyright © 2021 PL1Fert. All rights reserved.
 //
 
@@ -73,6 +65,7 @@ void delete_student(struct student*,int index,int &amount);
 void edit_student(struct student*,int amount);
 int confirmation(void);
 void find(struct student*,int amount);
+void part_find(struct student*,int amount);
 void string_to_lowercase(char *string);
 void output_student(struct student pointer);
 
@@ -126,6 +119,9 @@ int main()
                 find(pointer,amount);
                 break;
             case 7:
+                part_find(pointer,amount);
+                break;
+            case 8:
                 free(pointer);
                 return 0;
         }
@@ -144,7 +140,8 @@ int menu(void)
     printf("4-sort students\n");
     printf("5-edit selected student\n");
     printf("6-find students\n");
-    printf("7-exit\n");
+    printf("7-part find students\n");
+    printf("8-exit\n");
     printf("Your choice: ");
     scanf("%d",&choice);
     return choice;
@@ -204,7 +201,6 @@ void output_struct(struct student *pointer,int amount)
 
 void header_delete(struct student *pointer, int &amount)
 {
-    
     int choice;
     char *enter_string = (char*)malloc(20*sizeof(char));
     char *buf_string = (char*)malloc(20*sizeof(char));
@@ -218,144 +214,112 @@ void header_delete(struct student *pointer, int &amount)
     
     while(1)
     {
-      printf("What to find\n");
-      printf("1-Lastname\n");
-      printf("2-Name\n");
-      printf("3-Patronymic\n");
-      printf("4-Address\n");
-      printf("5-Groupnumber\n");
-      printf("6-Rating\n");
-      printf("7-Exit\n");
-      printf("Your choice: ");
-      scanf("%d",&choice);
+        printf("What to find\n");
+        printf("1-Lastname\n");
+        printf("2-Name\n");
+        printf("3-Patronymic\n");
+        printf("4-Address\n");
+        printf("5-Groupnumber\n");
+        printf("6-Rating\n");
+        printf("7-Exit\n");
+        printf("Your choice: ");
+        scanf("%d",&choice);
         
-      switch(choice)
-      {
-          case 1:
-              printf("Enter lastname\n");
-              rewind(stdin);
-              fgets(enter_string, 20, stdin);
-              string_to_lowercase(enter_string);
-              for(int i = 0;i < amount;i++)
-              {
-                  strcpy(buf_string,pointer[i].lastname);
-                  string_to_lowercase(buf_string);
-                  if(!strcmp(buf_string,enter_string))
+        switch(choice)
+          {
+              case 1:
+                  printf("Enter lastname\n");
+                  rewind(stdin);
+                  fgets(enter_string, 20, stdin);
+                  string_to_lowercase(enter_string);
+                  for(int i = 0;i < amount;i++)
                   {
-                      delete_student(pointer,i,amount);
+                      strcpy(buf_string,pointer[i].lastname);
+                      string_to_lowercase(buf_string);
+                      if(!strcmp(buf_string,enter_string))
+                      {
+                          delete_student(pointer,i,amount);
+                      }
                   }
-              }
-              break;
-          case 2:
-              printf("Enter name\n");
-              rewind(stdin);
-              fgets(enter_string, 20, stdin);
-              string_to_lowercase(enter_string);
-              for(int i = 0;i < amount;i++)
-              {
-                  strcpy(buf_string,pointer[i].name);
-                  string_to_lowercase(buf_string);
-                  if(!strcmp(buf_string,enter_string))
+                  break;
+              case 2:
+                  printf("Enter name\n");
+                  rewind(stdin);
+                  fgets(enter_string, 20, stdin);
+                  string_to_lowercase(enter_string);
+                  for(int i = 0;i < amount;i++)
                   {
-                      output_student(pointer[i]);
+                      strcpy(buf_string,pointer[i].name);
+                      string_to_lowercase(buf_string);
+                      if(!strcmp(buf_string,enter_string))
+                      {
+                          delete_student(pointer,i,amount);
+                      }
                   }
-              }
-              break;
-          case 3:
-              printf("Enter patronymic\n");
-              rewind(stdin);
-              fgets(enter_string, 20, stdin);
-              string_to_lowercase(enter_string);
-              for(int i = 0;i < amount;i++)
-              {
-                  strcpy(buf_string,pointer[i].patronymic);
-                  string_to_lowercase(buf_string);
-                  if(!strcmp(buf_string,enter_string))
+                  break;
+              case 3:
+                  printf("Enter patronymic\n");
+                  rewind(stdin);
+                  fgets(enter_string, 20, stdin);
+                  string_to_lowercase(enter_string);
+                  for(int i = 0;i < amount;i++)
                   {
-                      output_student(pointer[i]);
+                      strcpy(buf_string,pointer[i].patronymic);
+                      string_to_lowercase(buf_string);
+                      if(!strcmp(buf_string,enter_string))
+                      {
+                          delete_student(pointer,i,amount);
+                      }
                   }
-              }
-              break;
-          case 4:
-              printf("Enter address\n");
-              rewind(stdin);
-              fgets(enter_string, 20, stdin);
-              string_to_lowercase(enter_string);
-              for(int i = 0;i < amount;i++)
-              {
-                  strcpy(buf_string,pointer[i].address);
-                  string_to_lowercase(buf_string);
-                  if(!strcmp(buf_string,enter_string))
+                  break;
+              case 4:
+                  printf("Enter address\n");
+                  rewind(stdin);
+                  fgets(enter_string, 20, stdin);
+                  string_to_lowercase(enter_string);
+                  for(int i = 0;i < amount;i++)
                   {
-                      output_student(pointer[i]);
+                      strcpy(buf_string,pointer[i].address);
+                      string_to_lowercase(buf_string);
+                      if(!strcmp(buf_string,enter_string))
+                      {
+                          delete_student(pointer,i,amount);
+                      }
                   }
-              }
-              break;
-          case 5:
-              printf("Enter groupnumber\n");
-              rewind(stdin);
-              fgets(enter_string, 20, stdin);
-              string_to_lowercase(enter_string);
-              for(int i = 0;i < amount;i++)
-              {
-                  strcpy(buf_string,pointer[i].group_number);
-                  string_to_lowercase(buf_string);
-                  if(!strcmp(buf_string,enter_string))
+                  break;
+              case 5:
+                  printf("Enter groupnumber\n");
+                  rewind(stdin);
+                  fgets(enter_string, 20, stdin);
+                  string_to_lowercase(enter_string);
+                  for(int i = 0;i < amount;i++)
                   {
-                      output_student(pointer[i]);
+                      strcpy(buf_string,pointer[i].group_number);
+                      string_to_lowercase(buf_string);
+                      if(!strcmp(buf_string,enter_string))
+                      {
+                          delete_student(pointer,i,amount);
+                      }
                   }
-              }
-              break;
-          case 6:
-              printf("Enter rating\n");
-              rewind(stdin);
-              scanf("%f",&buf_float);
-              for(int i = 0;i < amount;i++)
-              {
-                  if(pointer[i].rating == buf_float)
+                  break;
+              case 6:
+                  printf("Enter rating\n");
+                  rewind(stdin);
+                  scanf("%f",&buf_float);
+                  for(int i = 0;i < amount;i++)
                   {
-                      output_student(pointer[i]);
+                      if(pointer[i].rating == buf_float)
+                      {
+                          delete_student(pointer,i,amount);
+                      }
                   }
-              }
-              break;
-          case 7:
-              free(buf_string);
-              free(enter_string);
-              return;
-      }
-    }
-    /*
-    printf("Choose what student you want to delete\n");
-    printf("Your choice: ");
-    scanf("%d",&number);
-    
-    printf("Enter a number of student to delete\n");
-    printf("To delete all students enter '999'\n");
-    printf("Your choice: ");
-    scanf("%d", &number);
-    number -=1;
-    if(number == 999 && confirmation() == 1)
-    {
-        amount = 0;
-        free(pointer);
-    }
-    
-    if (number != 999 && number == amount-1 && confirmation() == 1)
-    {
-        amount--;
-        pointer = (struct student*)realloc(pointer,amount * sizeof(struct student));
-    }
-    
-    if (number != 999 && number != amount && confirmation() == 1)
-    {
-        for (; number+1 < amount; number++)
-        {
-            pointer[number] = pointer[number+1];
+                  break;
+              case 7:
+                  free(buf_string);
+                  free(enter_string);
+                  return;
+          }
         }
-        amount--;
-        pointer = (struct student*)realloc(pointer,amount * sizeof(struct student));
-    }
-     */
 }
 
 void delete_student(struct student* pointer,int index,int& amount)
@@ -600,8 +564,6 @@ void string_to_lowercase(char *string)
     while(string[i])
     {
         string[i]=tolower(string[i]);
-        //if(string[i] <= 'Z' && string[i] >= 'A')
-        //string[i] += 'z'-'Z';
         i++;
     }
 }
@@ -886,4 +848,120 @@ void sort_rating_descending_order(struct student* pointer,int amount)
     printf("Sorted successfully\n");
 }
 
+void part_find(struct student* pointer,int amount)
+{
+    int choice;
+    char *enter_string = (char*)malloc(20*sizeof(char));
+    char *buf_string = (char*)malloc(20*sizeof(char));
+    float buf_float;
+    while(1)
+    {
+        printf("What to find\n");
+        printf("1-Lastname\n");
+        printf("2-Name\n");
+        printf("3-Patronymic\n");
+        printf("4-Address\n");
+        printf("5-Groupnumber\n");
+        printf("6-Rating\n");
+        printf("7-Exit\n");
+        printf("Your choice: ");
+        scanf("%d",&choice);
+        
+        switch(choice)
+        {
+            case 1:
+                printf("Enter lastname\n");
+                rewind(stdin);
+                fgets(enter_string, 20, stdin);
+                string_to_lowercase(enter_string);
+                for(int i = 0;i < amount;i++)
+                {
+                    strcpy(buf_string,pointer[i].lastname);
+                    string_to_lowercase(buf_string);
+                    if(strstr(buf_string,enter_string))
+                    {
+                        output_student(pointer[i]);
+                    }
+                }
+                break;
+            case 2:
+                printf("Enter name\n");
+                rewind(stdin);
+                fgets(enter_string, 20, stdin);
+                string_to_lowercase(enter_string);
+                for(int i = 0;i < amount;i++)
+                {
+                    strcpy(buf_string,pointer[i].name);
+                    string_to_lowercase(buf_string);
+                    if(strstr(buf_string,enter_string))
+                    {
+                        output_student(pointer[i]);
+                    }
+                }
+                break;
+            case 3:
+                printf("Enter patronymic\n");
+                rewind(stdin);
+                fgets(enter_string, 20, stdin);
+                string_to_lowercase(enter_string);
+                for(int i = 0;i < amount;i++)
+                {
+                    strcpy(buf_string,pointer[i].patronymic);
+                    string_to_lowercase(buf_string);
+                    if(strstr(buf_string,enter_string))
+                    {
+                        output_student(pointer[i]);
+                    }
+                }
+                break;
+            case 4:
+                printf("Enter address\n");
+                rewind(stdin);
+                fgets(enter_string, 20, stdin);
+                string_to_lowercase(enter_string);
+                for(int i = 0;i < amount;i++)
+                {
+                    strcpy(buf_string,pointer[i].address);
+                    string_to_lowercase(buf_string);
+                    if(strstr(buf_string,enter_string))
+                    {
+                        output_student(pointer[i]);
+                    }
+                }
+                break;
+            case 5:
+                printf("Enter groupnumber\n");
+                rewind(stdin);
+                fgets(enter_string, 20, stdin);
+                string_to_lowercase(enter_string);
+                for(int i = 0;i < amount;i++)
+                {
+                    strcpy(buf_string,pointer[i].group_number);
+                    string_to_lowercase(buf_string);
+                    if(strstr(buf_string,enter_string))
+                    {
+                        output_student(pointer[i]);
+                    }
+                }
+                break;
+            case 6:
+                printf("Enter rating\n");
+                rewind(stdin);
+                scanf("%f",&buf_float);
+                for(int i = 0;i < amount;i++)
+                {
+                    if(pointer[i].rating == buf_float)
+                    {
+                        delete_student(pointer,i,amount);
+                    }
+                }
+                break;
+            case 7:
+                free(buf_string);
+                free(enter_string);
+                return;
+        
+        }
+    }
+}
 
