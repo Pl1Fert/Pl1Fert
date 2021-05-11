@@ -26,22 +26,11 @@ int ClearStdin()
 int main()
 {
     setlocale(LC_ALL,"");
-    int max;
+    int max,value = 0;
     int n; // количество строк
     int m; // количество символов в строке
     int readCount, isEmpty;
       
-       while (1)
-      {
-          readCount = scanf("%d", &n);
-          isEmpty = ClearStdin();
-          if (readCount == 1 && isEmpty != 0 && n > 0)
-          {
-              break;
-          }
-          printf("Неверный формат числа. Введите целое положительное число\n");
-      }
-    
     printf("Введите количество строк: ");
     while (1)
     {
@@ -71,7 +60,7 @@ int main()
     
     for(int i = 0; i < n; i++)
     {
-        str[i] = (char *)malloc(m+1*sizeof(char));
+        str[i] = (char *)malloc((m+1)*sizeof(char));
 
     }
     
@@ -87,10 +76,10 @@ int main()
     
     //Ввод строк
     
-    fflush(stdin);
+    rewind(stdin);
     for(int i = 0; i < n; i++)
     {
-        gets(str[i]);
+        fgets(str[i],(m+1),stdin);
     }
     
     //Вывод строк
@@ -101,12 +90,25 @@ int main()
     {
         printf("%s\n",str[i]);
     }
-    
+
     //Перевод строк в числа
+    int j,znak;
     
-    for(int i = 0;i < n;i++)
+    for (int i = 0; i < n; i++)
     {
-        array[i][0] = atoi(str[i]);
+        for (j = 0; str[i][j]!= '\0'; j++)
+        {
+            znak = (str[i][j]=='-')? -1:1;
+            if (str[i][j]=='+' || str[i][j]=='-') j++;
+            if (str[i][j] >= '0' && str[i][j] <= '9')
+            {
+                value = value * 10 + str[i][j] - '0';
+            }
+            value*=znak;
+        }
+        array[i][0] = value;
+        value = 0;
+        j = 0;
     }
     
     //Сортировка по убыванию
@@ -148,4 +150,3 @@ int main()
     free(array);
     return 0;
 }
-
