@@ -19,37 +19,37 @@ struct car input_info()
     struct car pointer;
     char* buf_string;
     
-        printf("Enter car's cost: ");
-        pointer.cost = input_check_float();
+    printf("Enter car's cost: ");
+    pointer.cost = input_check_float();
+    
+    printf("Enter car's model: ");
+    buf_string = get_model();
+    pointer.car_model = buf_string;
         
-        printf("Enter car's model: ");
-        buf_string = get_model();
-        pointer.car_model = buf_string;
-        
-        printf("\nChoose an option to Input: ");
-        printf("\n1-Body type ");
-        printf("\n2-Engine volume: ");
-        printf("\nYour choice: ");
-        
-        switch(input_check_int_for_sort())
-        {
-            case 1:
-                pointer.flag = 1;
-                while(1)
-                {
-                    printf("\nInput body type: ");
-                    rewind(stdin);
-                    getstring(pointer.type.body_type,15);
-                    if(check_string(pointer.type.body_type))break;
-                }
-                break;
-            case 2:
+    printf("\nChoose an option to Input: ");
+    printf("\n1-Body type ");
+    printf("\n2-Engine volume: ");
+    printf("\nYour choice: ");
+    
+    switch(input_check_int_for_sort())
+    {
+        case 1:
+            pointer.flag = 1;
+            while(1)
+            {
+                printf("\nInput body type: ");
+                rewind(stdin);
+                getstring(pointer.type.body_type,15);
+                if(check_string(pointer.type.body_type))break;
+            }
+            break;
+        case 2:
                 
-                pointer.flag = 2;
-                printf("\nInput engine volume: ");
-                pointer.type.engine_volume = input_check_float();
-                break;
-        }
+            pointer.flag = 2;
+            printf("\nInput engine volume: ");
+            pointer.type.engine_volume = input_check_float();
+            break;
+    }
     return pointer;
 }
 
