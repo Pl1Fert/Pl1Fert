@@ -22,9 +22,30 @@ struct tree_15
 {
     char surname[20];
     int year;
-    struct inttree *left;
-    struct inttree *right;
+    struct tree_15 *left;
+    struct tree_15 *right;
 };
+
+struct queue
+{
+    struct queue *next;
+    char *string;
+};
+
+struct two_direction_ring
+{
+    int number;
+    struct two_direction_ring *next;
+    struct two_direction_ring *prev;
+};
+
+struct one_direction_ring
+{
+    int number;
+    struct one_direction_ring *next;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 
 // ВОПРОС 1.1
 
@@ -94,7 +115,7 @@ void deletion(struct inttree **node,int key)
 
 void non_recursive_output(struct inttree *node)
 {
- 
+    if(!node)return;
     struct stack
     {
         struct inttree *tree;
@@ -157,21 +178,205 @@ void non_recursive_output(struct inttree *node)
 
 // ВОПРОС 4.2
 
+void deletion(struct two_direction_ring **first, int number)
+{
+    if (!(*first))return;
+    
+    //struct two_direction_ring *prev,*next;
+    struct two_direction_ring *pointer = (*first);
+    
+    for(int i = 1;i < number && pointer -> next != (*first);i++)
+        pointer = pointer -> next;
+    
+    if(pointer)
+    {
+        if(pointer -> next == (*first))
+        {
+            (*first) = NULL;
+            free(pointer);
+            return;
+        }
+
+        pointer->prev->next = pointer->next;
+        pointer->next->prev = pointer->prev;
+        
+        free(pointer);
+    }
+}
+
 // ВОПРОС 5.1
 
-// ВОПРОС 5.2
+// ВОПРОС 5.2 возможно
+
+void non_recursive_output(struct inttree *node)
+{
+    if(!node)return;
+    struct stack
+    {
+        struct inttree *tree;
+        struct stack *next;
+    };
+    struct stack *stack_element, *tree_element = NULL;
+    
+ 
+    bool traffic = true;
+ 
+    stack_element = (struct stack *)calloc(1, sizeof(struct stack));
+    stack_element->tree = node;
+    stack_element -> next = tree_element;
+ 
+    //output_record(node);
+    //printf("%d",node -> number);
+    
+ 
+    while (stack_element || node -> right)
+    {
+        while(node -> left || node -> right)
+        {
+            if(traffic && node -> left)
+                node = node -> left;
+ 
+            else if(node -> right)
+                node = node -> right;
+            
+            traffic = true;
+ 
+            if(node -> left && node -> right)
+            {
+                tree_element = stack_element;
+                stack_element = (struct stack *)calloc(1, sizeof(struct stack));
+                stack_element -> tree = node;
+                stack_element -> next = tree_element;
+            }
+            
+            //output_record(node);
+            printf("%d",node -> number);
+        }
+ 
+        if (stack_element)
+        {
+            node = stack_element -> tree;
+            tree_element = stack_element -> next;
+            free(stack_element);
+        }
+ 
+        stack_element = tree_element;
+ 
+        if (node -> left && node -> right)
+            traffic = false;
+        else
+            break;
+    }
+}
 
 // ВОПРОС 6.1
 
 // ВОПРОС 6.2
 
+void sort_queue(struct queue **head)
+{
+    if (!(*head))
+        return;
+    struct queue *pointer1 = (*head);
+    struct queue *pointer2;
+    struct queue *buf = NULL;
+    struct queue *flag = NULL;
+    struct queue *pointer3 = (*head);
+
+
+    for(;pointer1 -> next;pointer1 = pointer1 -> next)
+    {
+        for(pointer2 = pointer1 -> next; pointer2 ;pointer2 = pointer2 -> next,pointer3 = pointer3 -> next)
+        {
+            if(pointer2 == pointer1 -> next) pointer3 = pointer1;
+            if((strcmp(pointer1 -> string,pointer2 -> string) > 0))
+            {
+                pointer3 -> next = pointer2 -> next;
+                pointer2 -> next = pointer1;
+                buf -> next = pointer2;
+                pointer1 = pointer2;
+            }
+        }
+        if(!flag)
+        {
+            flag = pointer1;
+            free(buf);
+        }
+        buf = pointer1;
+    }
+    *head = flag;
+}
+
 // ВОПРОС 7.1
 
 // ВОПРОС 7.2
 
+void sort_two_direction_ring(struct two_direction_ring **first)
+{
+    if (!(*first))
+        return;
+    
+    struct two_direction_ring * pointer1,*pointer2,*pointer3;
+    
+    pointer1 = (*first);
+    
+    do
+    {
+        pointer2 = pointer1 -> next;
+        pointer3 = pointer1;
+        do
+        {
+            if(pointer3 -> number > pointer2 -> number) pointer3 = pointer2;
+            pointer2 = pointer2 -> next;
+        }while(pointer2 != (*first));
+        if(pointer3 != pointer1)
+        {
+            if((*first) == pointer1) (*first) = pointer3;
+            pointer3 -> prev -> next = pointer3 -> next;
+            pointer3 -> next -> prev = pointer3 -> prev;
+            pointer1 -> prev -> next = pointer3;
+            pointer3 -> next = pointer1;
+            pointer3 -> prev = pointer1 -> prev;
+            pointer1 -> prev = pointer3;
+        }else
+        {
+            pointer1 = pointer1 -> next;
+        }
+    }while(pointer1 -> next != (*first));
+}
+
 // ВОПРОС 8.1
 
 // ВОПРОС 8.2
+
+void deletion(struct one_direction_ring **first,int number)
+{
+    if (!(*first)) return;
+    
+    //struct one_direction_ring *prev,*next;
+    struct one_direction_ring *pointer = (*first);
+    struct one_direction_ring *temp = (*first);
+    
+    for(int i = 1;i < number && pointer -> next != (*first);i++)
+        pointer = pointer -> next;
+    
+    for(;temp -> next != pointer;)
+        temp = temp -> next;
+    
+    if(pointer && temp)
+    {
+        if(pointer -> next == (*first))
+        {
+            (*first) = NULL;
+            free(pointer);
+            free(temp);
+            return;
+        }
+        temp -> next = pointer -> next;
+        free(pointer);
+        free(temp);
+    }
+}
 
 // ВОПРОС 9.1
 
@@ -181,6 +386,59 @@ void non_recursive_output(struct inttree *node)
 
 // ВОПРОС 10.2
 
+void deletion(struct queue **top,struct queue **last)
+{
+    if (!(*top))
+    {
+        return;
+    }
+    
+    int number;
+    scanf("%d",&number);
+    
+    struct queue *pointer = *top;
+    struct queue *temp;
+
+    for(int i = 1;i < number && pointer != NULL;i++)
+    {
+        pointer = pointer -> next;
+    }
+    
+    if(pointer)
+    {
+        if(pointer == *top)
+        {
+            (*top) = (*top) -> next;
+
+            free(pointer);
+            return;
+        }
+        
+        if (pointer == *last)
+        {
+            temp = (*top);
+            while (temp -> next != pointer) temp = temp -> next;
+            *last = temp;
+            (*last) -> next = pointer -> next;
+
+            free(temp);
+            free(pointer);
+            return;
+        }
+        
+        if(pointer != *top && pointer != *last)
+        {
+            temp = (*top);
+            while(temp -> next != pointer) temp = temp -> next;
+            temp -> next = pointer -> next;
+
+            free(temp);
+            free(pointer);
+            return;
+        }
+    }
+}
+
 // ВОПРОС 11.1
 
 // ВОПРОС 11.2
@@ -188,6 +446,50 @@ void non_recursive_output(struct inttree *node)
 // ВОПРОС 12.1
 
 // ВОПРОС 12.2
+
+struct inttree *nonRecursiveCreation(struct inttree *root, int num)
+{
+    struct inttree *tempRoot1, *tempRoot2;
+
+    tempRoot1 = (struct inttree *)malloc(sizeof(struct inttree));
+    tempRoot1 -> number = num;
+    tempRoot1 -> left = tempRoot1 -> right = NULL;
+
+    if (root == NULL)
+        return tempRoot1;
+    else {
+        tempRoot2 = root;
+
+        while (tempRoot2)
+        {
+            if (tempRoot1 -> number == tempRoot2 -> number)
+            {
+                free(tempRoot1);
+                break;
+            }
+            else {
+                if (tempRoot1 -> number < tempRoot2 -> number)
+                    if (tempRoot2 -> left == NULL)
+                    {
+                        tempRoot2 -> left = tempRoot1;
+                        tempRoot2 = NULL;
+                    } else
+                        tempRoot2 = tempRoot2 -> left;
+                else
+                {
+                    if (tempRoot2 -> right == NULL)
+                    {
+                        tempRoot2 -> right = tempRoot1;
+                        tempRoot2 = NULL;
+                    }
+                    else
+                        tempRoot2 = tempRoot2 -> right;
+                }
+            }
+        }
+        return root;
+    }
+}
 
 // ВОПРОС 13.1
 
@@ -300,9 +602,9 @@ int main(int argc,char **argv)
     struct stringtree *root = NULL;
     char *filename = (char*)malloc(strlen(argv[1])+1);
     strcpy(filename,argv[1]);
-    strcat(filename,".bin");
+    strcat(filename,".txt");
     FILE *file;
-    if(!(file = fopen(filename,"rb")))
+    if(!(file = fopen(filename,"r")))
     {
         return 0;
     }
@@ -316,6 +618,32 @@ int main(int argc,char **argv)
 // ВОПРОС 17.1
 
 // ВОПРОС 17.2
+
+void create(struct two_direction_ring **first)
+{
+    int ask,number;
+    scanf("%d",&ask);
+    if(ask == 1)return;
+    
+    struct two_direction_ring *pointer = (struct two_direction_ring*)malloc(sizeof(struct two_direction_ring));
+    scanf("%d",&number);
+    
+    pointer -> number = number;
+    
+    if(!(*first))
+    {
+        pointer -> next = pointer -> prev = pointer;
+        (*first) = pointer;
+    }else
+    {
+        pointer -> next = (*first) -> next;
+        (*first) -> next -> prev = pointer;
+        (*first) -> next = pointer;
+        pointer -> prev = (*first);
+    }
+    
+    create((*first));
+}
 
 // ВОПРОС 18.1
 
@@ -337,6 +665,51 @@ int main(int argc,char **argv)
 
 // ВОПРОС 22.2
 
+void sort_two_direction_ring(struct two_direction_ring **first)
+{
+    if (!(*first))
+        return;
+    
+    struct two_direction_ring * pointer1,*pointer2,*pointer3;
+    
+    pointer1 = (*first);
+    
+    do
+    {
+        pointer2 = pointer1 -> next;
+        pointer3 = pointer1;
+        do
+        {
+            if(pointer3 -> number > pointer2 -> number) pointer3 = pointer2;
+            pointer2 = pointer2 -> next;
+        }while(pointer2 != (*first));
+        if(pointer3 != pointer1)
+        {
+            if((*first) == pointer1) (*first) = pointer3;
+            pointer3 -> prev -> next = pointer3 -> next;
+            pointer3 -> next -> prev = pointer3 -> prev;
+            pointer1 -> prev -> next = pointer3;
+            pointer3 -> next = pointer1;
+            pointer3 -> prev = pointer1 -> prev;
+            pointer1 -> prev = pointer3;
+        }else
+        {
+            pointer1 = pointer1 -> next;
+        }
+    }while(pointer1 -> next != (*first));
+}
+
 // ВОПРОС 23.1
 
 // ВОПРОС 23.2
+
+void sort_one_direction_ring(struct one_direction_ring **first)
+{
+    if (!(*first))
+        return;
+    
+    struct one_direction_ring * pointer1,*pointer2,*pointer3;
+    
+    pointer1 = (*first);
+
+}
