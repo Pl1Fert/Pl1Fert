@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <math.h>
 
 struct inttree
 {
@@ -44,6 +45,42 @@ struct one_direction_ring
     int number;
     struct one_direction_ring *next;
 };
+
+struct library
+{
+    char author[20];
+    char book_name[20];
+    int year;
+};
+
+struct figures
+{
+    char name[20];
+    union types
+    {
+        float radius;
+        float perimetr;
+    };
+    union types type;
+};
+
+struct student
+{
+    struct marks *mark;
+    struct group_info *group;
+};
+
+struct marks
+{
+    int marks[4];
+};
+
+struct group_info
+{
+    char name[20];
+    char group_name[20];
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -382,6 +419,31 @@ void deletion(struct one_direction_ring **first,int number)
 
 // ВОПРОС 9.2
 
+int main(int argc, char *argv[])
+{
+    float square_circle;
+    struct figures *pointer;
+    
+    pointer = (struct figures*)malloc(10*sizeof(struct figures));
+    
+    for(int i = 1;i < 11;i++)
+    {
+        strcpy(pointer[i].name,argv[i]);
+        if(strcmp(pointer[i].name,"circle") == 0)
+        {
+            scanf("%f",&(pointer[i].type.radius));
+            square_circle = pointer[i].type.radius * pointer[i].type.radius * 3.14;
+            printf("%f",square_circle);
+        }
+        
+        if(strcmp(pointer[i].name,"rectangle") == 0)
+        {
+            scanf("%f",&(pointer[i].type.perimetr));
+        }
+    }
+    return 0;
+}
+
 // ВОПРОС 10.1
 
 // ВОПРОС 10.2
@@ -522,7 +584,7 @@ struct stringtree *input(struct stringtree *node,char temp[])
     return node;
 }
 
-int main(int argc,char **argv)
+int main(int argc,char *argv[])
 {
     struct stringtree *root = NULL;
     char temp[20];
@@ -589,10 +651,68 @@ int main()
 
 // ВОПРОС 16.2
 
-void print(struct stringtree *node,char* filename,FILE *file)
+void print(struct stringtree *node,char* filename)
 {
-    if(!(file = fopen(filename,"wb")))
+    FILE *file;
+    if(!(file = fopen(filename,"w")))
         return;
+    
+       struct stack
+       {
+           struct stringtree *tree;
+           struct stack *next;
+       };
+       struct stack *stack_element, *tree_element = NULL;
+       
+    
+       bool traffic = true;
+    
+       stack_element = (struct stack *)calloc(1, sizeof(struct stack));
+       stack_element->tree = node;
+       stack_element -> next = tree_element;
+    
+       //output_record(node);
+        fprintf(file,"%s",node -> string);
+       
+    
+       while (stack_element || node -> right)
+       {
+           while(node -> left || node -> right)
+           {
+               if(traffic && node -> left)
+                   node = node -> left;
+    
+               else if(node -> right)
+                   node = node -> right;
+               
+               traffic = true;
+    
+               if(node -> left && node -> right)
+               {
+                   tree_element = stack_element;
+                   stack_element = (struct stack *)calloc(1, sizeof(struct stack));
+                   stack_element -> tree = node;
+                   stack_element -> next = tree_element;
+               }
+               
+               //output_record(node);
+               fprintf(file,"%s",node -> string);
+           }
+    
+           if (stack_element)
+           {
+               node = stack_element -> tree;
+               tree_element = stack_element -> next;
+               free(stack_element);
+           }
+    
+           stack_element = tree_element;
+    
+           if (node -> left && node -> right)
+               traffic = false;
+           else
+               break;
+       }
     
     fclose(file);
 }
@@ -609,7 +729,7 @@ int main(int argc,char **argv)
         return 0;
     }
     
-    print(root,filename,file);
+    print(root,filename);
     
     fclose(file);
     return 0;
@@ -642,7 +762,7 @@ void create(struct two_direction_ring **first)
         pointer -> prev = (*first);
     }
     
-    create((*first));
+    create(first);
 }
 
 // ВОПРОС 18.1
@@ -651,7 +771,104 @@ void create(struct two_direction_ring **first)
 
 // ВОПРОС 19.1
 
+void deletion(struct queue **top,struct queue **last)
+{
+    if (!(*top))
+    {
+        return;
+    }
+    
+    int number;
+    scanf("%d",&number);
+    
+    struct queue *pointer = *top;
+    struct queue *temp;
+
+    for(int i = 1;i < number && pointer != NULL;i++)
+    {
+        pointer = pointer -> next;
+    }
+    
+    if(pointer)
+    {
+        if(pointer == *top)
+        {
+            (*top) = (*top) -> next;
+
+            free(pointer);
+            return;
+        }
+        
+        if (pointer == *last)
+        {
+            temp = (*top);
+            while (temp -> next != pointer) temp = temp -> next;
+            *last = temp;
+            (*last) -> next = pointer -> next;
+
+            free(temp);
+            free(pointer);
+            return;
+        }
+        
+        if(pointer != *top && pointer != *last)
+        {
+            temp = (*top);
+            while(temp -> next != pointer) temp = temp -> next;
+            temp -> next = pointer -> next;
+
+            free(temp);
+            free(pointer);
+            return;
+        }
+    }
+}
+
 // ВОПРОС 19.2
+
+void add(struct library **pointer,int amount)
+{
+    if((*pointer) == NULL)
+    {
+        amount++;
+        (*pointer) = (struct library*)malloc(amount*sizeof(struct library));
+    }
+    else
+    {
+        (*pointer) = (struct library*)realloc((*pointer),(amount+1) * sizeof(struct library));
+    }
+    fgets((*pointer) -> author,20,stdin);
+    fgets((*pointer) -> book_name,20,stdin);
+    scanf("%d",&((*pointer) -> year));
+}
+
+void sort_library(struct library *pointer,int amount)
+{
+    struct library temp;
+    
+    for(int i = 0; i< amount-1;i++)
+        for(int j = 1; j< amount; j++)
+        {
+            if(strcmp(pointer[i].author,pointer[j].author) > 0)
+            {
+                temp = pointer[i];
+                pointer[i] = pointer[j];
+                pointer[j] = temp;
+            }
+        }
+}
+
+int main()
+{
+    int ask;
+    int amount = 0;
+    struct library *pointer = NULL;
+    do
+    {
+        add(&pointer,&amount); // похуй на си файл закину ссылку он схавает
+        scanf("%d",&ask);
+    }while(ask == 1);
+}
 
 // ВОПРОС 20.1
 
@@ -660,6 +877,44 @@ void create(struct two_direction_ring **first)
 // ВОПРОС 21.1
 
 // ВОПРОС 21.2
+
+int main()
+{
+    int amount;
+
+    scanf("%d",&amount);
+    struct student *pointer;
+    pointer = (struct student*)malloc(amount*sizeof(struct student));
+    
+    for(int i = 0; i< amount;i++)
+    {
+        rewind(stdin);
+        fgets(pointer[i].group -> name,20,stdin);
+        rewind(stdin);
+        fgets(pointer[i].group -> group_name,20,stdin);
+        
+        for(int j = 0;j<4;j++)
+        {
+            scanf("%d",&(pointer[i].mark -> marks[j]));
+        }
+    }
+    
+    int max_mark = 0,max_student;
+    
+    for(int i = 0;i < amount;i++)
+    {
+        for(int j = 0;j < 4;j++)
+        {
+            if(max_mark < pointer[i].mark -> marks[j])
+            {
+                max_mark = pointer[i].mark -> marks[j];
+                max_student = i;
+            }
+        }
+    }
+    
+    return 0;
+}
 
 // ВОПРОС 22.1
 
@@ -683,6 +938,7 @@ void sort_two_direction_ring(struct two_direction_ring **first)
             if(pointer3 -> number > pointer2 -> number) pointer3 = pointer2;
             pointer2 = pointer2 -> next;
         }while(pointer2 != (*first));
+        
         if(pointer3 != pointer1)
         {
             if((*first) == pointer1) (*first) = pointer3;
@@ -708,8 +964,43 @@ void sort_one_direction_ring(struct one_direction_ring **first)
     if (!(*first))
         return;
     
-    struct one_direction_ring * pointer1,*pointer2,*pointer3;
+    struct one_direction_ring *pointer1,*pointer2,*pointer3,*pointer4,*pointer5,*pointer6;
     
     pointer1 = (*first);
+    pointer2 = pointer1 -> next;
+    
+    while(pointer2 -> next != (*first))
+        pointer2 = pointer2 -> next;
+    do
+    {
+        pointer3 = pointer1 -> next;
+        pointer4 = pointer1;
+        pointer5 = pointer1;
+        do
+        {
+            if(pointer5 -> number > pointer3 -> number)
+            {
+                pointer5 = pointer3;
+                pointer6 = pointer4;
+            }
+            pointer3 = pointer3 -> next;
+            pointer4 = pointer4 -> next;
+        }while(pointer3 != (*first));
+        if(pointer5 != pointer1)
+        {
+            if((*first) == pointer1) (*first) = pointer5;
+            
+            pointer2 -> next = pointer5;
+            pointer6 -> next = pointer5 -> next;
+            pointer5 -> next = pointer1;
+            pointer2 = pointer5;
+        }else
+        {
+            pointer1 = pointer1 -> next;
+            pointer2 = pointer2 -> next;
+        }
+    }while(pointer1 -> next != (*first));
 
 }
+
+
