@@ -409,11 +409,11 @@ int main()
                 pos2 +=2;
                 fsetpos(file,&pos2);
                 fprintf(file,"%d",buf2);
-                buf2 -= 2;
+                pos2 -= 2;
             }else
                 break;
             pos2 -= 2;
-            if(pos2 >= 0) fgetpos(file, &pos2);
+            if(pos2 >= 0) fsetpos(file, &pos2);
         }
         pos2 += 2;
         fsetpos(file,&pos2);
@@ -492,6 +492,60 @@ void non_recursive_output(struct inttree *node)
 
 // ВОПРОС 4.1
 
+int main()
+{
+    char filename[20];
+    fgets(filename,20,stdin);
+    strcat(filename,".bin");
+    FILE *file;
+    
+    if(!(file = fopen(filename,"w+b")))
+    {
+        return 0;
+    }
+    
+    int k = sizeof(int);
+    int buf1,buf2;
+    fpos_t pos1,pos2;
+    
+    rewind(file);
+    fseek(file, k, 0);
+    
+    while(1)
+    {
+        fgetpos(file, &pos1);
+        fread(&buf1,sizeof(int),1,file);
+        if(feof(file))rewind(file);
+        
+        pos2 = pos1 - k;
+        fsetpos(file,&pos2);
+        while(pos2 >= 0)
+        {
+            fgetpos(file, &pos2);
+            fread(&buf2,sizeof(int),1,file);
+            if(buf2 > buf1)
+            {
+                pos2 +=k;
+                fsetpos(file,&pos2);
+                fwrite(&buf2, sizeof(int), 1,file);
+                pos2 -= k;
+            }else
+                break;
+            pos2 -= k;
+            if(pos2 >= 0) fsetpos(file, &pos2);
+        }
+        pos2 += k;
+        fsetpos(file,&pos2);
+        fwrite(&buf1, sizeof(int), 1,file);
+        pos1 += k;
+        if(pos1 >= filelength(fileno(file))) break;
+        fsetpos(file,&pos1);
+    }
+    
+    fclose(file);
+    return 0;
+}
+
 // ВОПРОС 4.2
 
 void deletion(struct two_direction_ring **first, int number)
@@ -521,6 +575,61 @@ void deletion(struct two_direction_ring **first, int number)
 }
 
 // ВОПРОС 5.1
+
+int main()
+{
+    char filename[20];
+    fgets(filename,20,stdin);
+    strcat(filename,".bin");
+    FILE *file;
+    
+    if(!(file = fopen(filename,"w+b")))
+    {
+        return 0;
+    }
+    int ask;
+    int k = sizeof(int);
+    int buf1,buf2;
+    fpos_t pos1,pos2;
+    
+    rewind(file);
+    
+    while(1)
+    {
+        scanf("%d",&ask);
+        if(ask == 999)break;
+        
+        while(1)
+        {
+            fgetpos(file, &pos1);
+            fread(&buf1,sizeof(int),1,file);
+            if(feof(file) || buf1 < ask )break;
+        }
+        rewind(file);
+        
+        if(buf1 > ask)
+        {
+            fseek(file, 0, 2);
+            fwrite(&ask, sizeof(int), 1,file);
+        }
+        fseek(file, -k, 2);
+        
+        do
+        {
+            fgetpos(file, &pos2);
+            fread(&buf1,sizeof(int),1,file);
+            pos2 +=k;
+            fsetpos(file, &pos2);
+            fwrite(&buf1, sizeof(int), 1,file);
+            fseek(file,pos2 - 2*k,0);
+        }while(pos1 < pos2 - k);
+        
+        fseek(file, pos2 - k, 0);
+        fwrite(&ask, sizeof(int), 1,file);
+    }
+    fclose(file);
+    return 0;
+}
 
 // ВОПРОС 5.2 возможно
 
@@ -725,6 +834,113 @@ int main(int argc, char *argv[])
 
 // ВОПРОС 10.1
 
+int main()
+{
+    char filename[20];
+    fgets(filename,20,stdin);
+    strcat(filename,".bin");
+    FILE *file;
+    
+    if(!(file = fopen(filename,"w+b")))
+    {
+        return 0;
+    }
+    
+    int k = sizeof(int);
+    int buf1,buf2;
+    fpos_t pos1,pos2;
+    
+    rewind(file);
+    fseek(file, k, 0);
+    
+    while(1)
+    {
+        fgetpos(file, &pos1);
+        fread(&buf1,sizeof(int),1,file);
+        if(feof(file))rewind(file);
+        
+        pos2 = pos1 - k;
+        fsetpos(file,&pos2);
+        while(pos2 >= 0)
+        {
+            fgetpos(file, &pos2);
+            fread(&buf2,sizeof(int),1,file);
+            if(buf2 > buf1)
+            {
+                pos2 +=k;
+                fsetpos(file,&pos2);
+                fwrite(&buf2, sizeof(int), 1,file);
+                pos2 -= k;
+            }else
+                break;
+            pos2 -= k;
+            if(pos2 >= 0) fsetpos(file, &pos2);
+        }
+        pos2 += k;
+        fsetpos(file,&pos2);
+        fwrite(&buf1, sizeof(int), 1,file);
+        pos1 += k;
+        if(pos1 >= filelength(fileno(file))) break;
+        fsetpos(file,&pos1);
+    }
+    
+    fclose(file);
+    return 0;
+}
+
+// ВОПРОС 10.1 c черточкой
+
+int main()
+{
+    char filename[20];
+    fgets(filename,20,stdin);
+    strcat(filename,".bin");
+    FILE *file;
+    
+    if(!(file = fopen(filename,"w+b")))
+    {
+        return 0;
+    }
+    
+    int k = sizeof(int);
+    int buf1,buf2,minbuf;
+    fpos_t pos1,pos2,minpos;
+    
+    rewind(file);
+    
+    while(1)
+    {
+        fgetpos(file, &pos1);
+        fread(&buf1,sizeof(int),1,file);
+        if(feof(file))break;
+        minbuf = buf1;
+        minpos = pos1;
+        while(1)
+        {
+            fgetpos(file, &pos2);
+            fread(&buf2,sizeof(int),1,file);
+            if(feof(file))break;
+            if(buf1 > buf2)
+            {
+                minpos = pos2;
+                minbuf = buf2;
+            }
+        }
+        
+        if(pos1 != minpos)
+        {
+            fsetpos(file,&pos1);
+            fwrite(&minbuf, sizeof(int), 1,file);
+            fsetpos(file,&minpos);
+            fwrite(&buf1, sizeof(int), 1,file);
+        }
+        pos1+=k;
+        fsetpos(file,&pos1);
+    }
+    fclose(file);
+    return 0;
+}
+
 // ВОПРОС 10.2
 
 void deletion(struct queue **top,struct queue **last)
@@ -782,6 +998,89 @@ void deletion(struct queue **top,struct queue **last)
 
 // ВОПРОС 11.1
 
+int main()
+{
+    char filename[20];
+    fgets(filename,20,stdin);
+    strcat(filename,".bin");
+    FILE *firstfile,*secondfile,*thirdfile;
+    
+    if(!(firstfile = fopen(filename,"rb")))
+    {
+        return 0;
+    }
+    if(!(secondfile = fopen(filename,"rb")))
+    {
+        return 0;
+    }
+    if(!(thirdfile = fopen(filename,"wb")))
+    {
+        return 0;
+    }
+    
+    int k = sizeof(int);
+    
+    int buf1,buf2;
+    fpos_t pos1,pos2;
+    rewind(firstfile);
+    fseek(firstfile,-k,2);
+    fseek(secondfile,-k,2);
+    fgetpos(firstfile, &pos1);
+    fgetpos(secondfile, &pos2);
+    fread(&buf1,sizeof(int),1,firstfile);
+    rewind(secondfile);
+    fread(&buf2,sizeof(int),1,secondfile);
+    
+    do
+    {
+        while(pos1 > 0 && buf1 < buf2)
+        {
+            fwrite(&buf1, sizeof(int), 1, thirdfile);
+            fseek(firstfile,-k * 2,1);
+            fgetpos(firstfile, &pos1);
+            if(pos1 < 0) break;
+            fread(&buf1,sizeof(int),1,firstfile);
+        }
+        
+        if(feof(secondfile))break;
+        
+        while(pos2 > 0 && buf1 >= buf2)
+        {
+            fwrite(&buf2, sizeof(int), 1, thirdfile);
+            fseek(secondfile,-k * 2,1);
+            fgetpos(secondfile, &pos2);
+            if(pos2 < 0) break;
+            fread(&buf2,sizeof(int),1,secondfile);
+        }
+        
+        
+    }while(pos1 > 0 || pos2 > 0);
+    
+    while(pos1 > 0 )
+    {
+        fwrite(&buf1, sizeof(int), 1, thirdfile);
+        fseek(firstfile,-k * 2,1);
+        fgetpos(firstfile, &pos1);
+        if(pos1 < 0) break;
+        fread(&buf1,sizeof(int),1,firstfile);
+    }
+    
+    while(pos2 > 0)
+    {
+        fwrite(&buf2, sizeof(int), 1, thirdfile);
+        fseek(secondfile,-k * 2,1);
+        fgetpos(secondfile, &pos2);
+        if(pos2 < 0) break;
+        fread(&buf2,sizeof(int),1,secondfile);
+    }
+    
+    fclose(firstfile);
+    fclose(secondfile);
+    fclose(thirdfile);
+    
+    return 0;
+}
+
 // ВОПРОС 11.2
 
 // ВОПРОС 12.1
@@ -837,6 +1136,61 @@ struct inttree *nonRecursiveCreation(struct inttree *root, int num)
 // ВОПРОС 13.2
 
 // ВОПРОС 14.1
+
+int main()
+{
+    char filename[20];
+    fgets(filename,20,stdin);
+    strcat(filename,".bin");
+    FILE *file;
+    
+    if(!(file = fopen(filename,"w+b")))
+    {
+        return 0;
+    }
+    int ask;
+    int k = sizeof(int);
+    int buf1,buf2;
+    fpos_t pos1,pos2;
+    
+    rewind(file);
+    
+    while(1)
+    {
+        scanf("%d",&ask);
+        if(ask == 999)break;
+        
+        while(1)
+        {
+            fgetpos(file, &pos1);
+            fread(&buf1,sizeof(int),1,file);
+            if(feof(file) || buf1 < ask )break;
+        }
+        rewind(file);
+        
+        if(buf1 > ask)
+        {
+            fseek(file, 0, 2);
+            fwrite(&ask, sizeof(int), 1,file);
+        }
+        fseek(file, -k, 2);
+        
+        do
+        {
+            fgetpos(file, &pos2);
+            fread(&buf1,sizeof(int),1,file);
+            pos2 +=k;
+            fsetpos(file, &pos2);
+            fwrite(&buf1, sizeof(int), 1,file);
+            fseek(file,pos2 - 2*k,0);
+        }while(pos1 < pos2 - k);
+        
+        fseek(file, pos2 - k, 0);
+        fwrite(&ask, sizeof(int), 1,file);
+    }
+    fclose(file);
+    return 0;
+}
 
 // ВОПРОС 14.2
 
@@ -1072,6 +1426,79 @@ int main(int argc,char **argv)
 }
 
 // ВОПРОС 17.1
+
+int main()
+{
+    char filename[20];
+    fgets(filename,20,stdin);
+    strcat(filename,".bin");
+    FILE *firstfile,*secondfile,*thirdfile;
+    
+    if(!(firstfile = fopen(filename,"rb")))
+    {
+        return 0;
+    }
+    if(!(secondfile = fopen(filename,"rb")))
+    {
+        return 0;
+    }
+    if(!(thirdfile = fopen(filename,"wb")))
+    {
+        return 0;
+    }
+    
+    int k = sizeof(int);
+    
+    int buf1,buf2;
+    fpos_t pos1,pos2;
+    rewind(firstfile);
+    fseek(secondfile,-k,2);
+    fgetpos(firstfile, &pos1);
+    fgetpos(secondfile, &pos2);
+    fread(&buf1,sizeof(int),1,firstfile);
+    fread(&buf2,sizeof(int),1,secondfile);
+    
+    do
+    {
+        while(!feof(firstfile) && buf1 < buf2)
+        {
+            fwrite(&buf1, sizeof(int), 1, thirdfile);
+            fread(&buf1,sizeof(int),1,firstfile);
+        }
+        
+        if(feof(firstfile))break;
+        
+        while(pos2 >= 0 && buf1 >= buf2)
+        {
+            fwrite(&buf2, sizeof(int), 1, thirdfile);
+            fseek(secondfile,-k * 2,1);
+            fgetpos(secondfile, &pos2);
+            if(pos2 < 0) break;
+            fread(&buf2,sizeof(int),1,secondfile);
+        }
+    }while(pos2 >= 0);
+    
+    while(!feof(firstfile))
+    {
+        fwrite(&buf1, sizeof(int), 1, thirdfile);
+        fread(&buf1,sizeof(int),1,firstfile);
+    }
+    
+    while(pos2 >= 0)
+    {
+        fwrite(&buf2, sizeof(int), 1, thirdfile);
+        fseek(secondfile,-k * 2,1);
+        fgetpos(secondfile, &pos2);
+        if(pos2 < 0) break;
+        fread(&buf2,sizeof(int),1,secondfile);
+    }
+    
+    fclose(firstfile);
+    fclose(secondfile);
+    fclose(thirdfile);
+    
+    return 0;
+}
 
 // ВОПРОС 17.2
 
