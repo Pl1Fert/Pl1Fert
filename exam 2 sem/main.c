@@ -33,6 +33,13 @@ struct queue
     char *string;
 };
 
+struct two_direction_queue
+{
+    struct two_direction_queue *next;
+    struct two_direction_queue *prev;
+    char *string;
+};
+
 struct two_direction_ring
 {
     int number;
@@ -1523,14 +1530,14 @@ int main(int argc,char *argv[])
         return 0;
     }
        
-    while((fscanf(file,"s",temp)) == 1)
+    while((fscanf(file,"%s",temp)) == 1)
           root = input(root,temp);
     
     fclose(file);
     return 0;
 }
 
-// ВОПРОС 15.1  переделать
+// ВОПРОС 15.1  хз для текстового ли
 
 int main()
 {
@@ -1545,35 +1552,55 @@ int main()
     }
     
     
-    int buf1,buf2,buf;
+    int buf1,buf2,buf3;
     fpos_t pos1,pos2;
     
-    rewind(file);
-    fgetpos(file, &pos1);
-    fscanf(file,"%d", &buf1);
-        
-    rewind(file);
-    fseek(file,-2,2);
-    fgetpos(file, &pos2);
-    fscanf(file,"%d", &buf2);
-    rewind(file);
+//    rewind(file);
+//    fgetpos(file, &pos1);
+//    fscanf(file,"%d", &buf1);
+//
+//    rewind(file);
+//    fseek(file,-2,2);
+//    fgetpos(file, &pos2);
+//    fscanf(file,"%d", &buf2);
+//    rewind(file);
+    pos1 = 0;
+    pos2 = 7*sizeof(int);
     
-    while(pos2 >= 0 || pos1 <= filelengh(fileno(file)))
+    for(int i = 0; i < 4;i++)
     {
         fsetpos(file, &pos1);
-        fprintf(file,"%d",buf2);
-        fsetpos(file, &pos2);
-        fprintf(file,"%d",buf1);
-        pos1+=2;
-        pos2-=2;
-        fsetpos(file, &pos1);
-        fgetpos(file, &pos1);
         fscanf(file,"%d", &buf1);
-        rewind(file);
         fsetpos(file, &pos2);
-        fgetpos(file, &pos2);
         fscanf(file,"%d", &buf2);
+        buf3 = buf1;
+        buf1 = buf2;
+        buf2 = buf3;
+        fsetpos(file, &pos1);
+        fprintf(file,"%d",buf1);
+        fsetpos(file, &pos2);
+        fprintf(file,"%d",buf2);
+        pos1 += sizeof(int);
+        pos2 -= sizeof(int);
     }
+    
+//    while(pos2 >= 0 || pos1 <= filelengh(fileno(file)))
+//    {
+//
+//        fsetpos(file, &pos1);
+//        fprintf(file,"%d",buf2);
+//        fsetpos(file, &pos2);
+//        fprintf(file,"%d",buf1);
+//        pos1+=2;
+//        pos2-=2;
+//        fsetpos(file, &pos1);
+//        fgetpos(file, &pos1);
+//        fscanf(file,"%d", &buf1);
+//        rewind(file);
+//        fsetpos(file, &pos2);
+//        fgetpos(file, &pos2);
+//        fscanf(file,"%d", &buf2);
+//    }
     
     fclose(file);
     return 0;
@@ -2169,40 +2196,65 @@ int main()
 
 // ВОПРОС 22.2
 
-void sort_two_direction_ring(struct two_direction_ring **first)
+void sort_two_direction_queue(struct two_direction_queue **head,struct two_direction_queue **tail)
 {
-    if (!(*first))
-        return;
+    struct two_direction_queue *pointer1,*pointer2,*pointer3;
     
-    struct two_direction_ring * pointer1,*pointer2,*pointer3;
-    
-    pointer1 = (*first);
-    
-    do
+    for(pointer2 = (*head);pointer2;pointer2 = pointer2 -> prev)
     {
-        pointer2 = pointer1 -> next;
-        pointer3 = pointer1;
-        do
+        for(pointer1 = (*tail);pointer1 -> next;pointer1 = pointer1 -> next)
         {
-            if(pointer3 -> number > pointer2 -> number) pointer3 = pointer2;
-            pointer2 = pointer2 -> next;
-        }while(pointer2 != (*first));
-        
-        if(pointer3 != pointer1)
-        {
-            if((*first) == pointer1) (*first) = pointer3;
-            pointer3 -> prev -> next = pointer3 -> next;
-            pointer3 -> next -> prev = pointer3 -> prev;
-            pointer1 -> prev -> next = pointer3;
-            pointer3 -> next = pointer1;
-            pointer3 -> prev = pointer1 -> prev;
-            pointer1 -> prev = pointer3;
-        }else
-        {
-            pointer1 = pointer1 -> next;
+            if(strcmp(pointer1 -> next -> string, pointer1 -> string) > 0)
+            {
+                pointer3 = pointer1 -> next;
+                if(!pointer1 -> prev) (*tail) = pointer1 -> next;
+                pointer1 -> next = pointer1 -> next -> next;
+                if(pointer1 -> next) pointer1 -> next -> prev = pointer1;
+                else pointer2 = (*head) = pointer1;
+                pointer3 -> prev = pointer1 -> prev;
+                pointer3 -> next = pointer1;
+                if(pointer3 -> prev) pointer3 -> prev -> next = pointer3;
+                pointer1 -> prev = pointer3;
+                pointer1 = pointer1 -> prev;
+            }
         }
-    }while(pointer1 -> next != (*first));
+    }
+    
 }
+//void sort_two_direction_ring(struct two_direction_ring **first)
+//{
+//    if (!(*first))
+//        return;
+//
+//    struct two_direction_ring * pointer1,*pointer2,*pointer3;
+//
+//    pointer1 = (*first);
+//
+//    do
+//    {
+//        pointer2 = pointer1 -> next;
+//        pointer3 = pointer1;
+//        do
+//        {
+//            if(pointer3 -> number > pointer2 -> number) pointer3 = pointer2;
+//            pointer2 = pointer2 -> next;
+//        }while(pointer2 != (*first));
+//
+//        if(pointer3 != pointer1)
+//        {
+//            if((*first) == pointer1) (*first) = pointer3;
+//            pointer3 -> prev -> next = pointer3 -> next;
+//            pointer3 -> next -> prev = pointer3 -> prev;
+//            pointer1 -> prev -> next = pointer3;
+//            pointer3 -> next = pointer1;
+//            pointer3 -> prev = pointer1 -> prev;
+//            pointer1 -> prev = pointer3;
+//        }else
+//        {
+//            pointer1 = pointer1 -> next;
+//        }
+//    }while(pointer1 -> next != (*first));
+//}
 
 // ВОПРОС 23.1
 
@@ -2302,7 +2354,6 @@ void sort_one_direction_ring(struct one_direction_ring **first)
             pointer2 = pointer2 -> next;
         }
     }while(pointer1 -> next != (*first));
-
 }
 
 
