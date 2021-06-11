@@ -788,7 +788,37 @@ void sort_queue(struct queue **head)
     *head = flag;
 }
 
-// ВОПРОС 7.1
+// ВОПРОС 7.1   доделать
+
+struct struct7
+{
+    char surname[20];
+    char mark1,mark2,mark3;
+};
+
+int main(int argc,char *argv[])
+{
+    char *filename = (char*)malloc(strlen(argv[1])+1);
+    strcpy(filename,argv[1]);
+    strcat(filename,".txt");
+    FILE *file;
+    
+    if(!(file = fopen(filename,"w")))
+    {
+        return 0;
+    }
+    
+    //int ask;
+    //int buf1,buf2;
+    //fpos_t pos1,pos2;
+    
+    
+    
+    rewind(file);
+    
+    fclose(file);
+    return 0;
+}
 
 // ВОПРОС 7.2
 
@@ -828,6 +858,8 @@ void sort_two_direction_ring(struct two_direction_ring **first)
 
 // ВОПРОС 8.1
 
+// ВОПРОС 8.1 c черточкой
+
 // ВОПРОС 8.2
 
 void deletion(struct one_direction_ring **first,int number)
@@ -860,6 +892,31 @@ void deletion(struct one_direction_ring **first,int number)
 }
 
 // ВОПРОС 9.1
+
+int  main()
+{
+    FILE *file;
+    fpos_t *pos1;
+    int i1,i2;
+    file =fopen ("aaa.bin","w+b");
+    rewind(file);
+ while(1)
+ {
+    fgetpos (file,pos1);
+    fread (&i1,1,sizeof(int),file);
+    if (feof(file)) break;
+    fread (&i2,1,sizeof(int),file);
+    if (feof(file)) break;
+    fsetpos(file,pos1);
+    fwrite (&i2,1,sizeof(int),file);
+    fwrite (&i1,1,sizeof(int),file);
+    *pos1+=(2*sizeof(int));
+    fsetpos (file,pos1);
+ }
+    fclose(file);
+    return 0;
+}
+
 
 // ВОПРОС 9.2
 
@@ -1139,6 +1196,19 @@ int main()
 
 // ВОПРОС 11.2
 
+struct ring11
+{
+    char *string;
+    struct man *pointer;
+    struct ring13 *next;
+};
+
+struct man
+{
+    char man[20];
+    struct man *next;
+};
+
 // ВОПРОС 12.1
 
 int main()
@@ -1302,6 +1372,61 @@ int main()
 }
 
 // ВОПРОС 13.2
+
+struct ring13
+{
+    struct man *pointer;
+    struct ring13 *next;
+};
+
+struct man
+{
+    char man[20];
+};
+
+void sort_one_direction_ring(struct ring13 **first)
+{
+    if (!(*first))
+        return;
+    
+    struct ring13 *pointer1,*pointer2,*pointer3,*pointer4,*pointer5,*pointer6;
+    
+    pointer1 = (*first);
+    pointer2 = pointer1 -> next;
+    
+    while(pointer2 -> next != (*first))
+        pointer2 = pointer2 -> next;
+    do
+    {
+        pointer3 = pointer1 -> next;
+        pointer4 = pointer1;
+        pointer5 = pointer1;
+        do
+        {
+            if(strcmp(pointer5 ->pointer ->man, pointer3 -> pointer -> man) > 0)
+            {
+                pointer5 = pointer3;
+                pointer6 = pointer4;
+            }
+            pointer3 = pointer3 -> next;
+            pointer4 = pointer4 -> next;
+        }while(pointer3 != (*first));
+        if(pointer5 != pointer1)
+        {
+            if((*first) == pointer1) (*first) = pointer5;
+            
+            pointer2 -> next = pointer5;
+            pointer6 -> next = pointer5 -> next;
+            pointer5 -> next = pointer1;
+            pointer2 = pointer5;
+        }else
+        {
+            pointer1 = pointer1 -> next;
+            pointer2 = pointer2 -> next;
+        }
+    }while(pointer1 -> next != (*first));
+
+}
 
 // ВОПРОС 14.1
 
@@ -1575,7 +1700,7 @@ void print(struct stringtree *node,char* filename)
     fclose(file);
 }
 
-int main(int argc,char **argv)
+int main(int argc,char *argv[])
 {
     struct stringtree *root = NULL;
     char *filename = (char*)malloc(strlen(argv[1])+1);
@@ -1698,7 +1823,7 @@ void create(struct two_direction_ring **first)
 
 // ВОПРОС 18.1
 
-void print (Field *pl)
+void printt (Field *pl)
 {
     printf(" %d %d %d %d %d %d %d %d    %d %d %d %d %d %d %d %d\n",
            pl->i15, pl->i14, pl->i13, pl->i12, pl->i11, pl->i10, pl->i9,
@@ -1721,12 +1846,47 @@ int main()
 
         pl = (Field *)&alphabet[i];
 
-        print(pl);
+        printt(pl);
     }
     return 0;
 }
 
 // ВОПРОС 18.2
+
+struct queue18
+{
+    struct queue18 *next;
+    int number;
+};
+
+void writingToBinary(struct queue18 *head, FILE **File)
+{
+    if (head)
+    {
+        writingToBinary(head -> next, File);
+        fwrite(&(head -> number), sizeof(head -> number), 1, *File);
+    }
+    else
+        return;
+}
+
+int main(int argc,char *argv[])
+{
+    struct queue18 *first = NULL;
+    
+    char *filename = (char*)malloc(strlen(argv[1])+1);
+    strcpy(filename,argv[1]);
+    strcat(filename,".bin");
+    FILE *file;
+    if(!(file = fopen(filename,"wb")))
+    {
+        return 0;
+    }
+    
+    writingToBinary(first, &file);
+    fclose(file);
+    return 0;
+}
 
 // ВОПРОС 19.1
 
