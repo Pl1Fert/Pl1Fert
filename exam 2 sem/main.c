@@ -703,59 +703,35 @@ void non_recursive_output(struct inttree *node)
 
 // ВОПРОС 6.1    нихуя не понял надо доделать
 
-int main()
+int main(int argc,char *argv[])
 {
-    char filename[20];
-    fgets(filename,20,stdin);
+    char *filename = (char*)malloc(strlen(argv[1])+1);
+    strcpy(filename,argv[1]);
     strcat(filename,".bin");
-    FILE *firstfile,*secondfile;
+    FILE *file;
     
-    if(!(firstfile = fopen(filename,"r")))
+    int min = atoi(argv[2]);
+    int max = atoi(argv[3]);
+    int buf;
+    
+    int i1 = 0,i2 = 0;
+    
+    if(!(file = fopen(filename,"rb+")))
     {
         return 0;
     }
-    if(!(secondfile = fopen(filename,"w+b")))
-    {
-        return 0;
-    }
-    
-    int k = sizeof(int);
-    
-    int buf1,buf2,buf3;
-    fpos_t pos;
-    rewind(firstfile);
     
     while(1)
     {
-        fscanf(firstfile, "%d",&buf1);
-        if(feof(firstfile))break;
-        pos = 0;
-        while(1)
-        {
-            fsetpos(secondfile, &pos);
-            //fgetpos(secondfile, &pos);
-            fread(&buf2,sizeof(int),1,secondfile);
-            if(feof(secondfile))break;
-            
-            if(buf1 == buf2)
-            {
-                while(1)
-                {
-                    fread(&buf3,sizeof(int),1,secondfile);
-                    if(feof(secondfile)) break;
-                    fseek(secondfile,-k * 2,1);
-                    fwrite(&buf3, sizeof(int), 1, secondfile);
-                    fseek(secondfile,k,1);
-                }
-            }
-            else pos += k;
-        }
-        if(feof(firstfile))break;
+        fread(&buf,sizeof(int),1,file);
+        if(feof(file))break;
+        fseek(file,i1,0);
+        fwrite(&buf, sizeof(int), 1,file);
+        fseek(file,++i2,0);
+        if(buf < min || buf > max)i1++;
     }
-    
-    fclose(firstfile);
-    fclose(secondfile);
-        
+
+    fclose(file);
     return 0;
 }
 
@@ -807,21 +783,54 @@ int main(int argc,char *argv[])
 {
     char *filename = (char*)malloc(strlen(argv[1])+1);
     strcpy(filename,argv[1]);
-    strcat(filename,".txt");
+    strcat(filename,".bin");
     FILE *file;
     
-    if(!(file = fopen(filename,"w")))
+    if(!(file = fopen(filename,"rb+")))
     {
         return 0;
     }
     
-    //int ask;
-    //int buf1,buf2;
-    //fpos_t pos1,pos2;
+    int flag = 0,min;
     
-    
-    
+    while(1)
+    {
+        struct struct7 rec;
+        if(fread(&rec, sizeof(rec), 1, file) == 0)break;
+        if(flag == 0)
+        {
+            min = rec.mark1 + rec.mark2 + rec.mark3;
+            flag = 1;
+        }
+        
+        int buf = rec.mark1 + rec.mark2 + rec.mark3;
+        
+        if(buf < min) min = buf;
+    }
     rewind(file);
+    
+    int from_read = 0;
+    int to_write = 0;
+    while(1)
+    {
+        struct struct7 rec;
+        fseek(file, from_read, 0);
+        if(fread(&rec, sizeof(rec), 1, file) == 0);
+        {
+            rewind(file);
+            fseek(file, to_write, 0);
+            chsize(fileno(file), ftell(file));
+            break;
+        }
+        
+        if(rec.mark1 + rec.mark2 + rec.mark3 != min)
+        {
+           fseek(file, to_write, 0);
+            fwrite((void*)&rec, sizeof(rec), 1, file);
+            to_write += sizeof(rec);
+        }
+        from_read +=sizeof(rec);
+    }
     
     fclose(file);
     return 0;
@@ -866,6 +875,41 @@ void sort_two_direction_ring(struct two_direction_ring **first)
 // ВОПРОС 8.1
 
 // ВОПРОС 8.1 c черточкой
+
+int main()
+{
+    FILE *file;
+    file = fopen("a.txt","r+w");
+    
+    char buf1,buf2;
+    fpos_t pos1,pos2;
+    int len = 0,i = 0;
+    while(1)
+        if(fscanf(file, "%c",&buf1)==1)len++;
+        else break;
+    
+    fseek(file, 0, 2);
+    fgetpos(file, &pos2);
+    rewind(file);
+    while(1)
+    {
+        fgetpos(file, &pos1);
+        fscanf(file,"%c",&buf1);
+        fsetpos(file, &pos2);
+        fscanf(file,"%c",&buf2);
+        fsetpos(file, &pos1);
+        fprintf(file,"%c", buf2);
+        fsetpos(file, &pos2);
+        fprintf(file,"%c", buf1);
+        pos1+=2;
+        pos2-=2;
+        i++;
+        fsetpos(file, &pos1);
+        if(i >=len/2)break;
+    }
+    fclose(file);
+    return 0;
+}
 
 // ВОПРОС 8.2
 
@@ -2018,6 +2062,63 @@ int main()
 
 // ВОПРОС 20.1
 
+int main()
+{
+    FILE *file;
+    
+    file = fopen("text.txt", "r+w");
+    char buf1,buf2,buf3;
+    //fpos_t pos1 = 0,pos2;
+    int len = 0 ;
+//    while(1)
+//    {
+//        fgetpos(file, &pos1);
+//        fscanf(file, "%c",&buf1);
+//        if(feof(file))break;
+//        pos2 = pos1 + 1;
+//        while(1)
+//        {
+//            fgetpos(file, &pos2);
+//            fscanf(file, "%c",&buf2);
+//            if(feof(file))break;
+//            if(buf1 == buf2)
+//            {
+//
+//            }
+//        }
+//    }
+    while(1)
+        if(fscanf(file,"%c", &buf1) == 1) len++;
+        else break;
+    rewind(file);
+    for(int i = 0;i < len; i++)
+    {
+        fseek(file,i,0);
+        fscanf(file, "%c",&buf1);
+        for(int j = i+1;j <= len;j++)
+        {
+            fseek(file,j,0);
+            fscanf(file, "%c",&buf2);
+            if(buf1 == buf2)
+            {
+                len--;
+                for(int k = j;k< len;k++)
+                {
+                    fseek(file,k+1,0);
+                    fscanf(file, "%c",&buf3);
+                    fseek(file,k+1,0);
+                    fprintf(file, "%c",' ');
+                    fseek(file,k,0);
+                    fprintf(file, "%c",buf3);
+                }
+            }
+        }
+        rewind(file);
+    }
+    fclose(file);
+    return 0;
+}
+
 // ВОПРОС 20.2
 
 // ВОПРОС 21.1
@@ -2221,40 +2322,6 @@ void sort_two_direction_queue(struct two_direction_queue **head,struct two_direc
     }
     
 }
-//void sort_two_direction_ring(struct two_direction_ring **first)
-//{
-//    if (!(*first))
-//        return;
-//
-//    struct two_direction_ring * pointer1,*pointer2,*pointer3;
-//
-//    pointer1 = (*first);
-//
-//    do
-//    {
-//        pointer2 = pointer1 -> next;
-//        pointer3 = pointer1;
-//        do
-//        {
-//            if(pointer3 -> number > pointer2 -> number) pointer3 = pointer2;
-//            pointer2 = pointer2 -> next;
-//        }while(pointer2 != (*first));
-//
-//        if(pointer3 != pointer1)
-//        {
-//            if((*first) == pointer1) (*first) = pointer3;
-//            pointer3 -> prev -> next = pointer3 -> next;
-//            pointer3 -> next -> prev = pointer3 -> prev;
-//            pointer1 -> prev -> next = pointer3;
-//            pointer3 -> next = pointer1;
-//            pointer3 -> prev = pointer1 -> prev;
-//            pointer1 -> prev = pointer3;
-//        }else
-//        {
-//            pointer1 = pointer1 -> next;
-//        }
-//    }while(pointer1 -> next != (*first));
-//}
 
 // ВОПРОС 23.1
 
