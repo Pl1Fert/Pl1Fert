@@ -160,13 +160,13 @@ int main()
         while(pos >= 0 && buf2 <= buf1)
         {
             fwrite(&buf1, sizeof(int), 1, thirdfile);
-            fseek(firstfile,-k * 2,1);
+            //fseek(firstfile,-k * 2,1);
+            pos-=k;
+            fsetpos(firstfile, &pos);
             fgetpos(firstfile, &pos);
             if(pos < 0) break;
             fread(&buf1,sizeof(int),1,firstfile);
         }
-        
-        
     }while(pos > 0);
     
     while(!feof(secondfile))
@@ -178,7 +178,9 @@ int main()
     while(pos >= 0)
     {
         fwrite(&buf1, sizeof(int), 1, thirdfile);
-        fseek(firstfile,-k * 2,1);
+        //fseek(firstfile,-k * 2,1);
+        pos-=k;
+        fsetpos(firstfile, &pos);
         fgetpos(firstfile, &pos);
         if(pos < 0) break;
         fread(&buf1,sizeof(int),1,firstfile);
@@ -567,13 +569,6 @@ void deletion(struct two_direction_ring **first, int number)
     
     if(pointer)
     {
-        if(pointer -> next == (*first))
-        {
-            (*first) = NULL;
-            free(pointer);
-            return;
-        }
-
         pointer->prev->next = pointer->next;
         pointer->next->prev = pointer->prev;
         
@@ -610,11 +605,11 @@ int main()
         {
             fgetpos(file, &pos1);
             fread(&buf1,sizeof(int),1,file);
-            if(feof(file) || buf1 < ask )break;
+            if(feof(file) || buf1 > ask )break;
         }
         rewind(file);
         
-        if(buf1 > ask)
+        if(buf1 < ask)
         {
             fseek(file, 0, 2);
             fwrite(&ask, sizeof(int), 1,file);
@@ -815,7 +810,7 @@ int main(int argc,char *argv[])
     {
         struct struct7 rec;
         fseek(file, from_read, 0);
-        if(fread(&rec, sizeof(rec), 1, file) == 0);
+        if(fread(&rec, sizeof(rec), 1, file) == 0)
         {
             rewind(file);
             fseek(file, to_write, 0);
@@ -825,7 +820,7 @@ int main(int argc,char *argv[])
         
         if(rec.mark1 + rec.mark2 + rec.mark3 != min)
         {
-           fseek(file, to_write, 0);
+            fseek(file, to_write, 0);
             fwrite((void*)&rec, sizeof(rec), 1, file);
             to_write += sizeof(rec);
         }
@@ -853,7 +848,8 @@ void sort_two_direction_ring(struct two_direction_ring **first)
         pointer3 = pointer1;
         do
         {
-            if(pointer3 -> number > pointer2 -> number) pointer3 = pointer2;
+            if(pointer3 -> number > pointer2 -> number)
+                pointer3 = pointer2;
             pointer2 = pointer2 -> next;
         }while(pointer2 != (*first));
         if(pointer3 != pointer1)
@@ -919,7 +915,7 @@ void deletion(struct one_direction_ring **first,int number)
     
     //struct one_direction_ring *prev,*next;
     struct one_direction_ring *pointer = (*first);
-    struct one_direction_ring *temp = (*first);
+    struct one_direction_ring *temp = (*first) -> next;
     
     for(int i = 1;i < number && pointer -> next != (*first);i++)
         pointer = pointer -> next;
@@ -929,13 +925,13 @@ void deletion(struct one_direction_ring **first,int number)
     
     if(pointer && temp)
     {
-        if(pointer -> next == (*first))
-        {
-            (*first) = NULL;
-            free(pointer);
-            free(temp);
-            return;
-        }
+//        if(pointer -> next == (*first))
+//        {
+//            (*first) = NULL;
+//            free(pointer);
+//            free(temp);
+//            return;
+//        }
         temp -> next = pointer -> next;
         free(pointer);
         free(temp);
@@ -951,19 +947,19 @@ int  main()
     int i1,i2;
     file =fopen ("aaa.bin","w+b");
     rewind(file);
- while(1)
- {
-    fgetpos (file,pos1);
-    fread (&i1,1,sizeof(int),file);
-    if (feof(file)) break;
-    fread (&i2,1,sizeof(int),file);
-    if (feof(file)) break;
-    fsetpos(file,pos1);
-    fwrite (&i2,1,sizeof(int),file);
-    fwrite (&i1,1,sizeof(int),file);
-    *pos1+=(2*sizeof(int));
-    fsetpos (file,pos1);
- }
+    while(1)
+    {
+        fgetpos (file,pos1);
+        fread (&i1,1,sizeof(int),file);
+        if (feof(file)) break;
+        fread (&i2,1,sizeof(int),file);
+        if (feof(file)) break;
+        fsetpos(file,pos1);
+        fwrite (&i2,1,sizeof(int),file);
+        fwrite (&i1,1,sizeof(int),file);
+        *pos1+=(2*sizeof(int));
+        fsetpos (file,pos1);
+    }
     fclose(file);
     return 0;
 }
@@ -1139,20 +1135,19 @@ void deletion(struct queue **top,struct queue **last)
         {
             temp = (*top);
             while (temp -> next != pointer) temp = temp -> next;
-            *last = temp;
-            (*last) -> next = pointer -> next;
+            (*last) = temp;
+            (*last) -> next = NULL;
 
             free(temp);
             free(pointer);
             return;
         }
         
-        if(pointer != *top && pointer != *last)
+        if(pointer != (*top) && pointer != (*last))
         {
             temp = (*top);
             while(temp -> next != pointer) temp = temp -> next;
             temp -> next = pointer -> next;
-
             free(temp);
             free(pointer);
             return;
@@ -1200,30 +1195,37 @@ int main()
         while(pos1 > 0 && buf1 < buf2)
         {
             fwrite(&buf1, sizeof(int), 1, thirdfile);
-            fseek(firstfile,-k * 2,1);
+            //fseek(firstfile,-k * 2,1);
+            pos1 -=k;
+            fsetpos(firstfile, &pos1);
             fgetpos(firstfile, &pos1);
             if(pos1 < 0) break;
             fread(&buf1,sizeof(int),1,firstfile);
         }
         
-        if(feof(secondfile))break;
+        //if(feof(firstfile))break;
         
         while(pos2 > 0 && buf1 >= buf2)
         {
             fwrite(&buf2, sizeof(int), 1, thirdfile);
-            fseek(secondfile,-k * 2,1);
+            //fseek(secondfile,-k * 2,1);
+            pos2 -=k;
+            fsetpos(firstfile, &pos2);
             fgetpos(secondfile, &pos2);
             if(pos2 < 0) break;
             fread(&buf2,sizeof(int),1,secondfile);
         }
         
+        //if(feof(secondfile))break;
         
     }while(pos1 > 0 || pos2 > 0);
     
     while(pos1 > 0 )
     {
         fwrite(&buf1, sizeof(int), 1, thirdfile);
-        fseek(firstfile,-k * 2,1);
+        //fseek(firstfile,-k * 2,1);
+        pos1 -=k;
+        fsetpos(firstfile, &pos1);
         fgetpos(firstfile, &pos1);
         if(pos1 < 0) break;
         fread(&buf1,sizeof(int),1,firstfile);
@@ -1232,7 +1234,9 @@ int main()
     while(pos2 > 0)
     {
         fwrite(&buf2, sizeof(int), 1, thirdfile);
-        fseek(secondfile,-k * 2,1);
+        //fseek(secondfile,-k * 2,1);
+        pos2 -=k;
+        fsetpos(firstfile, &pos2);
         fgetpos(secondfile, &pos2);
         if(pos2 < 0) break;
         fread(&buf2,sizeof(int),1,secondfile);
@@ -1251,14 +1255,71 @@ struct ring11
 {
     char *string;
     struct man *pointer;
-    struct ring13 *next;
+    struct ring11 *next;
 };
 
 struct man
 {
-    char man[20];
+    char* man;
     struct man *next;
 };
+
+void del (struct ring11 **enter)
+{
+    struct ring11 *runner, *maxElement, *preMaxElement;
+    struct man *tempHead;
+
+    runner = *enter;
+    maxElement = *enter;
+
+    if ((*enter)->next == *enter)
+    {
+        free(*enter);
+        return;
+    }
+
+    while (runner->next != *enter)
+    {
+        if (strcmp(runner->next->string, maxElement->string) > 0)
+        {
+            preMaxElement = runner;
+            maxElement = runner->next;
+        }
+        runner = runner->next;
+    }
+
+    if(maxElement == *enter)
+    {
+        while((*enter)->pointer)
+        {
+            tempHead = (struct man *)malloc(sizeof(struct man));           // Распределяю память на новую голову стека
+            tempHead->man = (*enter)->pointer->man;                  // Копирую данные из стека, который надо переписать в новую голову
+
+            tempHead->next = (*enter)->next->pointer;                  // Показываю, что следующий элемент новой головы - предыдущая голова стека
+            (*enter)->next->pointer = tempHead;                        // Устанавливаю новую голову
+
+            (*enter)->pointer = (*enter)->pointer->next;
+        }
+        runner->next = (*enter)->next;
+        free(*enter);
+    }
+    else
+    {
+        while(maxElement->pointer)
+        {
+            tempHead = (struct man *)malloc(sizeof(struct man));
+            tempHead->man = maxElement->pointer->man;
+
+            tempHead->next = maxElement->next->pointer;
+            maxElement->next->pointer = tempHead;
+
+            maxElement->pointer = maxElement->pointer->next;
+        }
+
+        preMaxElement->next = maxElement->next;
+        free(maxElement);
+    }
+}
 
 // ВОПРОС 12.1
 
@@ -1426,11 +1487,11 @@ int main()
 
 struct ring13
 {
-    struct man *pointer;
+    struct gandon *pointer;
     struct ring13 *next;
 };
 
-struct man
+struct gandon
 {
     char man[20];
 };
@@ -1538,7 +1599,7 @@ int main()
 
 // ВОПРОС 14.2
 
-struct stringtree *input(struct stringtree *node,char temp[])
+struct stringtree *inputt(struct stringtree *node,char temp[])
 {
     int comparison;
     if(node == NULL)
@@ -1550,12 +1611,12 @@ struct stringtree *input(struct stringtree *node,char temp[])
     {
         if((comparison = strcmp(temp,node -> string)) < 0)
         {
-                node -> left = input(node -> left,temp);
+                node -> left = inputt(node -> left,temp);
         }
         
         if(comparison > 0)
         {
-            node -> right = input(node -> right,temp);
+            node -> right = inputt(node -> right,temp);
         }
     }
     return node;
@@ -1575,7 +1636,7 @@ int main(int argc,char *argv[])
     }
        
     while((fscanf(file,"%s",temp)) == 1)
-          root = input(root,temp);
+          root = inputt(root,temp);
     
     fclose(file);
     return 0;
