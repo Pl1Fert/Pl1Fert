@@ -382,59 +382,98 @@ int main()
 }
 // ВОПРОС 3.1 c черточкой
 
-int main()
+//int main()
+//{
+//    char filename[20];
+//    fgets(filename,20,stdin);
+//    strcat(filename,".txt");
+//    FILE *file;
+//
+//    if(!(file = fopen(filename,"w+")))
+//    {
+//        return 0;
+//    }
+//
+//
+//    int buf1,buf2;
+//    fpos_t pos1,pos2;
+//
+//    rewind(file);
+//    fseek(file, 2, 0);
+//
+//    while(1)
+//    {
+//        fgetpos(file, &pos1);
+//        fscanf(file,"%d", &buf1);
+//        if(feof(file))rewind(file);
+//
+//        pos2 = pos1 - 2;
+//        fsetpos(file,&pos2);
+//        while(pos2 >= 0)
+//        {
+//            fgetpos(file, &pos2);
+//            fscanf(file,"%d", &buf2);
+//            if(buf2 > buf1)
+//            {
+//                pos2 +=2;
+//                fsetpos(file,&pos2);
+//                fprintf(file,"%d",buf2);
+//                pos2 -= 2;
+//            }else
+//                break;
+//            pos2 -= 2;
+//            if(pos2 >= 0) fsetpos(file, &pos2);
+//        }
+//        pos2 += 2;
+//        fsetpos(file,&pos2);
+//        fprintf(file,"%d",buf1);
+//        pos1 += 2;
+//        if(pos1 >= filelength(fileno(file))) break;
+//        fsetpos(file,&pos1);
+//    }
+//
+//    fclose(file);
+//    return 0;
+//}
+
+void main()
 {
-    char filename[20];
-    fgets(filename,20,stdin);
-    strcat(filename,".txt");
-    FILE *file;
-    
-    if(!(file = fopen(filename,"w+")))
-    {
-        return 0;
-    }
-    
-    
-    int buf1,buf2;
-    fpos_t pos1,pos2;
-    
-    rewind(file);
-    fseek(file, 2, 0);
-    
-    while(1)
-    {
-        fgetpos(file, &pos1);
-        fscanf(file,"%d", &buf1);
-        if(feof(file))rewind(file);
-        
-        pos2 = pos1 - 2;
-        fsetpos(file,&pos2);
-        while(pos2 >= 0)
-        {
-            fgetpos(file, &pos2);
-            fscanf(file,"%d", &buf2);
-            if(buf2 > buf1)
+    FILE *f;
+    int i=1,j,k,kk,flag=0,ind;
+    f=fopen("aaa.txt","r+");
+     while(1)
+     {
+         fseek (f,3*i,0);
+          fscanf (f,"%3d",&k);
+          if (feof(f)) flag=1;
+          j=i-1;
+          fseek (f,3*j,0);
+          fscanf (f,"%3d",&kk);
+          ind=0;
+          while (j>=0 && k<kk)
+          {
+              fseek (f,3*(j+1),0);
+               fprintf (f,"%3d",kk);
+               j--;
+               if (j<=0) rewind(f);
+               else
+                   fseek (f,3*j,0);
+               fscanf (f,"%3d",&kk);
+               ind=1;
+          }
+            if (ind)
             {
-                pos2 +=2;
-                fsetpos(file,&pos2);
-                fprintf(file,"%d",buf2);
-                pos2 -= 2;
-            }else
-                break;
-            pos2 -= 2;
-            if(pos2 >= 0) fsetpos(file, &pos2);
-        }
-        pos2 += 2;
-        fsetpos(file,&pos2);
-        fprintf(file,"%d",buf2);
-        pos1 += 2;
-        if(pos1 >= filelength(fileno(file))) break;
-        fsetpos(file,&pos1);
-    }
+                fseek (f,3*(j+1),0);
+               fprintf (f,"%3d",k);
+            }
+              if (flag) break;
+              
+                 i++;
+     }
+ fclose(f);
     
-    fclose(file);
-    return 0;
 }
+
 
 // ВОПРОС 3.2
 
@@ -613,6 +652,7 @@ int main()
         {
             fseek(file, 0, 2);
             fwrite(&ask, sizeof(int), 1,file);
+            continue;
         }
         fseek(file, -k, 2);
         
@@ -620,6 +660,7 @@ int main()
         {
             fgetpos(file, &pos2);
             fread(&buf1,sizeof(int),1,file);
+            rewind(file);
             pos2 +=k;
             fsetpos(file, &pos2);
             fwrite(&buf1, sizeof(int), 1,file);
@@ -633,7 +674,8 @@ int main()
     return 0;
 }
 
-// ВОПРОС 5.2 возможно
+// ВОПРОС 5.2 неправильно
+
 
 void non_recursive_output(struct inttree *node)
 {
@@ -696,7 +738,7 @@ void non_recursive_output(struct inttree *node)
     }
 }
 
-// ВОПРОС 6.1    нихуя не понял надо доделать
+// ВОПРОС 6.1
 
 int main(int argc,char *argv[])
 {
@@ -709,22 +751,37 @@ int main(int argc,char *argv[])
     int max = atoi(argv[3]);
     int buf;
     
-    int i1 = 0,i2 = 0;
+    int /*i1 = 0,i2 = 0,*/cutSize = 0;
     
     if(!(file = fopen(filename,"rb+")))
     {
         return 0;
     }
     
+//    while(1)
+//    {
+//        fread(&buf,sizeof(int),1,file);
+//        if(feof(file))break;
+//        fseek(file,i1,0);
+//        fwrite(&buf, sizeof(int), 1,file);
+//        fseek(file,++i2,0);
+//        if(buf < min || buf > max)i1++;
+//    }
+    
     while(1)
     {
-        fread(&buf,sizeof(int),1,file);
-        if(feof(file))break;
-        fseek(file,i1,0);
-        fwrite(&buf, sizeof(int), 1,file);
-        fseek(file,++i2,0);
-        if(buf < min || buf > max)i1++;
+        fread(&buf, sizeof(int), 1, file);
+        if(buf == EOF || feof(file))
+            break;
+        if(buf > min && buf < max)
+        {
+            fseek(file, -sizeof(int), SEEK_CUR);
+            fwrite("", 1, 1, file);
+            cutSize++;
+        }
     }
+
+    chsize(fileno(file), cutSize);
 
     fclose(file);
     return 0;
@@ -963,7 +1020,6 @@ int  main()
     fclose(file);
     return 0;
 }
-
 
 // ВОПРОС 9.2
 
@@ -1538,6 +1594,51 @@ void sort_one_direction_ring(struct ring13 **first)
         }
     }while(pointer1 -> next != (*first));
 
+}
+
+void sort(struct ring13 **enter)
+{
+    struct ring13 *preSort, *sort, *preCheck, *check;
+    check = preCheck = *enter;
+
+    while (preCheck->next != *enter)
+        preCheck = preCheck->next;
+
+    while(1)
+    {
+        preSort = preCheck;
+        sort = check->next;
+
+        // Ищем элемент, который будет меньше, чем сортируемый
+        while (strcmp(preSort->next->pointer ->man, sort->pointer -> man) < 0)
+            preSort = preSort->next;
+
+        if (sort != preCheck)
+        {
+            if (preSort != check)
+            {
+                check->next = sort->next;
+                sort->next = preSort->next;
+                preSort->next = sort;
+                if (sort->next == *enter)
+                    *enter = sort;
+            }
+            else
+                check = check->next;
+        }
+        else
+        {
+            if (sort == preSort)
+                *enter = sort;
+            else
+            {
+                check->next = sort->next;
+                sort->next = preSort->next;
+                preSort->next = sort;
+            }
+            break;
+        }
+    }
 }
 
 // ВОПРОС 14.1
@@ -2222,7 +2323,9 @@ int main()
         while(pos1 > 0 && buf1 > buf2)
         {
             fwrite(&buf1, sizeof(int), 1, thirdfile);
-            fseek(firstfile,-k * 2,1);
+            //fseek(firstfile,-k * 2,1);
+            pos1-=k;
+            fsetpos(firstfile, &pos1);
             fgetpos(firstfile, &pos1);
             if(pos1 < 0) break;
             fread(&buf1,sizeof(int),1,firstfile);
@@ -2233,7 +2336,9 @@ int main()
         while(pos2 > 0 && buf1 <= buf2)
         {
             fwrite(&buf2, sizeof(int), 1, thirdfile);
-            fseek(secondfile,-k * 2,1);
+            //fseek(firstfile,-k * 2,1);
+            pos2-=k;
+            fsetpos(firstfile, &pos2);
             fgetpos(secondfile, &pos2);
             if(pos2 < 0) break;
             fread(&buf2,sizeof(int),1,secondfile);
@@ -2245,7 +2350,9 @@ int main()
     while(pos1 > 0 )
     {
         fwrite(&buf1, sizeof(int), 1, thirdfile);
-        fseek(firstfile,-k * 2,1);
+        //fseek(firstfile,-k * 2,1);
+        pos1-=k;
+        fsetpos(firstfile, &pos1);
         fgetpos(firstfile, &pos1);
         if(pos1 < 0) break;
         fread(&buf1,sizeof(int),1,firstfile);
@@ -2254,7 +2361,9 @@ int main()
     while(pos2 > 0)
     {
         fwrite(&buf2, sizeof(int), 1, thirdfile);
-        fseek(secondfile,-k * 2,1);
+        //fseek(firstfile,-k * 2,1);
+        pos2-=k;
+        fsetpos(firstfile, &pos2);
         fgetpos(secondfile, &pos2);
         if(pos2 < 0) break;
         fread(&buf2,sizeof(int),1,secondfile);
@@ -2381,7 +2490,6 @@ void sort_two_direction_queue(struct two_direction_queue **head,struct two_direc
             }
         }
     }
-    
 }
 
 // ВОПРОС 23.1
